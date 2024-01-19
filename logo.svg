@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+	 version="1.1"
+	 width="200"
+	 height="200">
+	<!-- Background -->
+	<polygon points="0,0 0,200 200,200 200,0"
+		   style="fill:white"/>
+	<!-- Border -->
+    	<path stroke="#116FCD" stroke-width="20" d="M 82.68 30 L 100 20 L 117.32 30"/>
+    	<path stroke="#116FCD" stroke-width="20" d="M 151.96 50 L 169.28 60 L 169.28 80"/>
+    	<path stroke="#116FCD" stroke-width="20" d="M 169.28 120 L 169.28 140 L 151.96 150"/>
+	<path stroke="#116FCD" stroke-width="20" d="M 117.32 170 L 100 180 L 82.68 170"/>
+	<path stroke="#116FCD" stroke-width="20" d="M 48.04 150 L 30.72 140 L 30.72 120"/>
+	<path stroke="#116FCD" stroke-width="20" d="M 30.72 80 L 30.72 60 L 48.04 50"/>
+	<!-- Inner -->
+	<polygon points="100,20 169.28,60 169.28,140 100,180 30.72,140 30.72,60" 
+               style="fill:white"/>
+	<polygon points="100,20 100,40 48.04,70 48.04,110 82.68,90 65.36,80 82.68,70 100,80 100,100 48.04,130 30.72,120 30.72,60"
+		   style="fill:#D4382A"/>
+	<polygon points="100,20 169.28,60 169.28,120 151.96,130 100,100"
+		   style="fill:#449D53"/>
+	<polygon points="117.32,50 151.96,70 151.96,110 117.32,90"
+		   style="fill:white"/>
+	<polygon points="30.72,120 48.04,130 65.36,120 134.64,120 151.96,130 169.68,120 169.20,140 151.96,150 134.64,140 110,140 110,174.23 100,180 90,174.23 90,140 65.36,140 48.04,150 30.72,140"
+	         style="fill:#C2A929"/>
+</svg>

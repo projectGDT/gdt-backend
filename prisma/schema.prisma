@@ -1,0 +1,155 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id Int @id @default(autoincrement())
+  qid BigInt @unique
+  username String @unique
+  pwFormatted Bytes @db.Binary(64)
+  avatarLink String @default("")
+
+  javaProfiles JavaProfile[]
+  bedrockProfiles BedrockProfile[]
+
+  ownedServers Server[] @relation("owning")
+  involvedServers PlayersInServers[] @relation("involving")
+
+  isSiteAdmin Boolean
+}
+
+model Server {
+  id Int @id @default(autoincrement())
+  name String
+  logoLink String
+  coverLink Json
+  introduction String
+
+  owner Player @relation("owning", fields: [ownerId], references: [id], onDelete: NoAction)
+  players PlayersInServers[] @relation("involving")
+
+  applyingPolicy ApplyingPolicy
+
+  ownerId Int
+}
+
+enum ApplyingPolicy {
+  CLOSED
+  ALL_OPEN
+  BY_FORM
+}
+
+model PlayersInServers {
+  player Player @relation("involving", fields: [playerId], references: [id], onDelete: Cascade)
+  server Server @relation("involving", fields: [serverId], references: [id], onDelete: Cascade)
+  playerId Int
+  serverId Int
+  isOperator Boolean
+  mainProfileType ProfileType
+  mainProfileId String
+  // for JAVA_MICROSOFT and LITTLE_SKIN, it is a UUID; for JAVA_OFFLINE, it is a playerName;
+  // and for XBOX, it is the gamertag.
+
+  @@id([playerId, serverId])
+}
+
+enum ProfileType {
+  JAVA_MICROSOFT
+  JAVA_LITTLE_SKIN
+  JAVA_OFFLINE
+  XBOX
+}
+
+model JavaServerMeta {
+  serverId Int @id
+  address String
+  port Int @default(25565)
+  coreVersion String
+  compatibleVersions String @default("")
+
+  isModded Boolean
+
+  authType JavaAuthType
+
+  // The resource pack is expected be provided directly by the server.
+}
+
+enum JavaAuthType {
+  MICROSOFT
+  LITTLE_SKIN
+  OFFLINE
+}
+
+model BedrockServerMeta {
+  serverId Int @id
+  address String
+  port Int @default(19132)
+  coreVersion String
+  compatibleVersions String @default("")
+
+  // The resource packs and add-ons are expected be provided directly by the server.
+}
+
+model JavaProfile {
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  uuid String @id
+  playerName String
+  type JavaProfileType
+
+  playerId Int
+}
+
+enum JavaProfileType {
+  MICROSOFT
+  LITTLE_SKIN
+}
+
+model BedrockProfile {
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  xuid BigInt @id
+  gamerTag String @unique
+
+  playerId Int
+}
+
+model ApplyingSession {
+  id Int @id
+  playerId Int
+  serverId Int
+  payload Json
+  submittedAt DateTime
+  status SessionStatus
+  handledBy Int
+}
+
+enum SessionStatus {
+  REVIEWING
+  ACCEPTED
+  REJECTED
+}
+
+model PreRegisteredPlayer {
+  passkey String @id
+  qid BigInt
+  username String @unique
+  pwFormatted Bytes @db.Binary(64)
+  expiresAt DateTime
+  invitorServerId Int @default(-1)
+}
+
+model InvitationCode {
+  id Int @id @default(autoincrement())
+  serverId Int
+  value String @unique
+  issuedBy Int
+  expiresAt DateTime
+  reuseableTimes Int @default(-1)
+}
