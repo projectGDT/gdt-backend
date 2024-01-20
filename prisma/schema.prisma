@@ -14,7 +14,7 @@ model Player {
   id Int @id @default(autoincrement())
   qid BigInt @unique
   username String @unique
-  pwFormatted Bytes @db.Binary(64)
+  pwFormatted Bytes
   avatarLink String @default("")
 
   javaProfiles JavaProfile[]
@@ -127,7 +127,7 @@ model ApplyingSession {
   payload Json
   submittedAt DateTime
   status SessionStatus
-  handledBy Int
+  handledBy Int @default(-1) // unhandled -> -1
 }
 
 enum SessionStatus {
@@ -140,16 +140,15 @@ model PreRegisteredPlayer {
   passkey String @id
   qid BigInt
   username String @unique
-  pwFormatted Bytes @db.Binary(64)
+  pwFormatted Bytes
   expiresAt DateTime
-  invitorServerId Int @default(-1)
+  invitorServerId Int // no invitor -> -1
 }
 
 model InvitationCode {
-  id Int @id @default(autoincrement())
   serverId Int
-  value String @unique
+  value String @id
   issuedBy Int
   expiresAt DateTime
-  reuseableTimes Int @default(-1)
+  reuseableTimes Int // infinite times -> -1
 }
