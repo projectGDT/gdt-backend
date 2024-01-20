@@ -1,9 +1,80 @@
 import { validator } from "@exodus/schemasafe"
-import fs = require("node:fs")
 
-const formSchema = fs.readFileSync(__dirname + "/form_schema.json").toString()
-
-export const formValidator = validator(JSON.parse(formSchema))
+export const formValidator = validator({
+    type: "object",
+    properties: {
+        title: {type: "string", minLength: 1, maxLength: 30},
+        preface: {type: "string", minLength: 1, maxLength: 200},
+        questions: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    root: {
+                        type: "object",
+                        properties: {
+                            contents: {type: "string", minLength: 1, maxLength: 60},
+                            hint: {type: "string", minLength: 1, maxLength: 60}
+                        },
+                        required: ["contents"],
+                        additionalProperties: false
+                    },
+                    branches: {
+                        oneOf: [
+                            {
+                                type: "object",
+                                properties: {
+                                    type: {type: "string", enum: ["choice"]},
+                                    choices: {type: "array", items: {type: "string", "minLength": 1, "maxLength": 20}},
+                                    allowMultipleChoices: {type: "boolean"},
+                                    hasBlank: {type: "boolean"}
+                                },
+                                required: ["type", "choices", "allowMultipleChoices", "hasBlank"],
+                                additionalProperties: false
+                            },
+                            {
+                                type: "object",
+                                properties: {
+                                    type: {type: "string", enum: ["number"]}
+                                },
+                                required: ["type"],
+                                additionalProperties: false
+                            },
+                            {
+                                type: "object",
+                                properties: {
+                                    type: {type: "string", enum: ["dateFull"]}
+                                },
+                                required: ["type"],
+                                additionalProperties: false
+                            },
+                            {
+                                type: "object",
+                                properties: {
+                                    type: {type: "string", enum: ["dateYearMonth"]}
+                                },
+                                required: ["type"],
+                                additionalProperties: false
+                            },
+                            {
+                                type: "object",
+                                properties: {
+                                    "type": {"type": "string", "enum": ["open"]}
+                                },
+                                required: ["type"],
+                                additionalProperties: false
+                            }
+                        ]
+                    }
+                },
+                required: ["root", "branches"],
+                additionalProperties: false
+            }
+        }
+    },
+    required: ["title", "preface", "questions"],
+    additionalProperties: false
+})
 
 export function generateAnswerSchema(form: {
     title: string,
