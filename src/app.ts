@@ -19,9 +19,9 @@ app.use(cors({
 
 app.use(express.json())
 
-require("./security/register")(app, prisma)
-
-require("./security/login")(app, prisma)
+const rootRouter = express.Router()
+require("./security/register")(rootRouter, prisma)
+require("./security/login")(rootRouter, prisma)
 
 app.listen(port, () => {
     console.log(`Start Listening on port ${port}`)

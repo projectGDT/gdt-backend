@@ -1,5 +1,5 @@
 import {validator} from "@exodus/schemasafe";
-import {Express} from "express";
+import {Router} from "express";
 import {PrismaClient} from "@prisma/client";
 import {digest} from "./digest";
 
@@ -35,8 +35,8 @@ async function usernameExists(username: string, prisma: PrismaClient) {
     }).then(result => result != null)
 }
 
-module.exports = (app: Express, prisma: PrismaClient) => {
-    app.get("/register/check-qid/:qid", async (req, res) => {
+module.exports = (router: Router, prisma: PrismaClient) => {
+    router.get("/register/check-qid/:qid", async (req, res) => {
         if (!req.params.qid.match(qidRegex)) {
             res.status(400).end()
             return
@@ -44,7 +44,7 @@ module.exports = (app: Express, prisma: PrismaClient) => {
         res.json({exists: await qidExists(parseInt(req.params.qid), prisma)})
     })
 
-    app.get("/register/check-username/:username", async (req, res) => {
+    router.get("/register/check-username/:username", async (req, res) => {
         if (!req.params.username.match(usernameRegex)) {
             res.status(400).end()
             return
@@ -52,7 +52,7 @@ module.exports = (app: Express, prisma: PrismaClient) => {
         res.json({exists: await usernameExists(req.params.username, prisma)})
     })
 
-    app.post("/register/submit", async (req, res) => {
+    router.post("/register/submit", async (req, res) => {
         if (!registerSubmitValidator(req.body)) {
             res.status(400).json({
                 reason: "info-invalid"
