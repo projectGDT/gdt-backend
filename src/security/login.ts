@@ -1,5 +1,5 @@
 import {Express} from "express"
-import {digest, matches} from "./pbkdf2-digest"
+import {digest, matches} from "./digest"
 import {validator} from "@exodus/schemasafe"
 import {PrismaClient} from "@prisma/client"
 import jwt = require("jsonwebtoken")
@@ -24,7 +24,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/login", asyn
     }
 
     const {username, password, ["cf-turnstile-response"]: cfTurnstileResponse} = req.body
-    if (!(await require("./do-site-verify")(cfTurnstileResponse))) {
+    if (!(await require("./captcha-verify")(cfTurnstileResponse))) {
         res.status(400).end()
         return
     }

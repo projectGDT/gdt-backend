@@ -1,7 +1,7 @@
 import {validator} from "@exodus/schemasafe";
 import {Express} from "express";
 import {PrismaClient} from "@prisma/client";
-import {digest} from "./pbkdf2-digest";
+import {digest} from "./digest";
 
 const registerSubmitValidator = validator({
     type: "object",
@@ -62,7 +62,7 @@ module.exports = (app: Express, prisma: PrismaClient) => {
 
         const {qid, username, password, invitationCode, ["cf-turnstile-response"]: cfTurnstileResponse} = req.body
 
-        if (!await require("./do-site-verify")(cfTurnstileResponse)) {
+        if (!await require("./captcha-verify")(cfTurnstileResponse)) {
             res.status(400).json({
                 reason: "bad-captcha-response"
             })
