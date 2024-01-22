@@ -11,6 +11,7 @@ module.exports = (router: Router) => router.use("/post-login", (req, res, next) 
         }
         res.locals.id = decoded["id"] as number
         res.locals.isSiteAdmin = decoded["isSiteAdmin"] as boolean
+        res.locals.authorizedServers = decoded["authorizedServers"]
         next()
     })
 })

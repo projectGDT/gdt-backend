@@ -21,12 +21,19 @@ app.use(cors({
 app.use(express.json())
 
 const rootRouter = express.Router()
-require("./security/register")(rootRouter, prisma)
-require("./security/login")(rootRouter, prisma)
+
+require("./register/check-qid")(rootRouter, prisma)
+require("./register/check-username")(rootRouter, prisma)
+require("./register/submit")(rootRouter, prisma)
+
+require("./login")(rootRouter, prisma)
 
 const postLoginRouter = express.Router()
 postLoginRouter.use(authBearerParser())
-require("./security/middleware")(postLoginRouter)
+require("./utils/middleware")(postLoginRouter)
+
+rootRouter.use("/post-login", postLoginRouter)
+app.use(rootRouter)
 
 app.listen(port, () => {
     console.log(`Start Listening on port ${port}`)

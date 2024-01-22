@@ -1,9 +1,9 @@
 import {Router} from "express"
-import {matches} from "./digest"
+import {matches} from "./utils/digest"
 import {validator} from "@exodus/schemasafe"
 import {PrismaClient} from "@prisma/client"
 import jwt = require("jsonwebtoken")
-import {jwtSecret} from "../app"
+import {jwtSecret} from "./app"
 
 const loginValidator = validator({
     type: "object",
@@ -24,7 +24,7 @@ module.exports = (router: Router, prisma: PrismaClient) => router.post("/login",
     }
 
     const {username, password, ["cf-turnstile-response"]: cfTurnstileResponse} = req.body
-    if (!(await require("./captcha-verify")(cfTurnstileResponse))) {
+    if (!(await require("./utils/captcha-verify")(cfTurnstileResponse))) {
         res.status(400).end()
         return
     }
@@ -34,12 +34,18 @@ module.exports = (router: Router, prisma: PrismaClient) => router.post("/login",
             {qid: parseInt(username)} :     // use qid
             {username: username}            // use username
     })
-        .then(player => {
+        .then(async player => {
             if (!matches(password, player.pwFormatted))
                 return Promise.reject()
             const payload = {
                 id: player.id,
                 isSiteAdmin: player.isSiteAdmin,
+                authorizedServers: await prisma.playersInServers.findMany({
+                    where: {
+                        playerId: player.id,
+                        isOperator: true
+                    }
+                }).then(result => result.map(entry => entry.serverId))
             }
             res.json({...payload, jwt: jwt.sign(payload, jwtSecret, {expiresIn: "12h"})})
         })
