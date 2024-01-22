@@ -12,7 +12,7 @@ datasource db {
 
 model Player {
   id Int @id @default(autoincrement())
-  qid BigInt @unique
+  qid Int @unique
   username String @unique
   pwFormatted Bytes
   avatarLink String @default("")
@@ -100,11 +100,12 @@ model BedrockServerMeta {
 
 model JavaProfile {
   player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  uuid String @id
+  uuid String
   playerName String
   type JavaProfileType
 
   playerId Int
+  @@id([uuid, type]) // the two factors lead to a unique profile
 }
 
 enum JavaProfileType {
@@ -114,8 +115,8 @@ enum JavaProfileType {
 
 model BedrockProfile {
   player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  xuid BigInt @id
-  gamerTag String @unique
+  xuid Int @id
+  gamerTag String // may be not unique as the data is not up to date
 
   playerId Int
 }
