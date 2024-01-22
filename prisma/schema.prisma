@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,8 +14,7 @@ model Player {
   pwFormatted Bytes
   avatarLink String @default("")
 
-  javaProfiles JavaProfile[]
-  bedrockProfiles BedrockProfile[]
+  profiles Profile[]
 
   ownedServers Server[] @relation("owning")
   involvedServers PlayersInServers[] @relation("involving")
@@ -50,22 +46,34 @@ enum ApplyingPolicy {
 model PlayersInServers {
   player Player @relation("involving", fields: [playerId], references: [id], onDelete: Cascade)
   server Server @relation("involving", fields: [serverId], references: [id], onDelete: Cascade)
+
   playerId Int
   serverId Int
-  isOperator Boolean
-  mainProfileType ProfileType
-  mainProfileId String
-  // for JAVA_MICROSOFT and LITTLE_SKIN, it is a UUID; for JAVA_OFFLINE, it is a playerName;
-  // and for XBOX, it is the gamertag.
-
   @@id([playerId, serverId])
+
+  isOperator Boolean
 }
 
-enum ProfileType {
-  JAVA_MICROSOFT
-  JAVA_LITTLE_SKIN
-  JAVA_OFFLINE
-  XBOX
+model Profile {
+  uniqueIdProvider Int
+  // Microsoft: -1; LittleSkin: -2; Xbox: -3;
+  // Offline: matching serverId
+
+  uniqueId String
+  // Microsoft & LittleSkin: UUID
+  // Xbox: XUID as String
+  // Offline: playerName
+
+  @@id([uniqueIdProvider, uniqueId])
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId Int
+
+  @@unique([playerId, uniqueIdProvider])
+
+  cachedPlayerName String
+  // Microsoft & LittleSkin & Offline: playerName
+  // Xbox: Xbox Gamer Tag
 }
 
 model JavaServerMeta {
@@ -74,18 +82,11 @@ model JavaServerMeta {
   port Int @default(25565)
   coreVersion String
   compatibleVersions String @default("")
+  uniqueIdProvider Int // defined above
 
   isModded Boolean
 
-  authType JavaAuthType
-
   // The resource pack is expected be provided directly by the server.
-}
-
-enum JavaAuthType {
-  MICROSOFT
-  LITTLE_SKIN
-  OFFLINE
 }
 
 model BedrockServerMeta {
@@ -96,29 +97,6 @@ model BedrockServerMeta {
   compatibleVersions String @default("")
 
   // The resource packs and add-ons are expected be provided directly by the server.
-}
-
-model JavaProfile {
-  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  uuid String
-  playerName String
-  type JavaProfileType
-
-  playerId Int
-  @@id([uuid, type]) // the two factors lead to a unique profile
-}
-
-enum JavaProfileType {
-  MICROSOFT
-  LITTLE_SKIN
-}
-
-model BedrockProfile {
-  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  xuid Int @id
-  gamerTag String // may be not unique as the data is not up to date
-
-  playerId Int
 }
 
 model ApplyingSession {
