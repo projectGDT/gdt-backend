@@ -8,7 +8,6 @@ import {PrismaClient} from "@prisma/client"
 const prisma = new PrismaClient()
 
 import {randomBytes} from "node:crypto"
-import authBearerParser from "auth-bearer-parser"
 export const jwtSecret = randomBytes(256)
 
 global.appRoot = __dirname
@@ -20,20 +19,13 @@ app.use(cors({
 
 app.use(express.json())
 
-const rootRouter = express.Router()
+require("./register/check-qid")(app, prisma)
+require("./register/check-username")(app, prisma)
+require("./register/submit")(app, prisma)
 
-require("./register/check-qid")(rootRouter, prisma)
-require("./register/check-username")(rootRouter, prisma)
-require("./register/submit")(rootRouter, prisma)
+require("./login")(app, prisma)
 
-require("./login")(rootRouter, prisma)
-
-const postLoginRouter = express.Router()
-postLoginRouter.use(authBearerParser())
-require("./utils/middleware")(postLoginRouter)
-
-rootRouter.use("/post-login", postLoginRouter)
-app.use(rootRouter)
+require("./post-login/use-middleware")(app)
 
 app.listen(port, () => {
     console.log(`Start Listening on port ${port}`)

@@ -1,5 +1,5 @@
 import {validator} from "@exodus/schemasafe";
-import {Router} from "express";
+import {Express} from "express";
 import {PrismaClient} from "@prisma/client";
 import {digest} from "../utils/digest";
 import {qidExists} from "./check-qid";
@@ -18,7 +18,7 @@ const registerSubmitValidator = validator({
     additionalProperties: false
 })
 
-module.exports = (router: Router, prisma: PrismaClient) => router.post("/register/submit", async (req, res) => {
+module.exports = (app: Express, prisma: PrismaClient) => app.post("/register/submit", async (req, res) => {
     if (!registerSubmitValidator(req.body)) {
         res.status(400).json({
             reason: "info-invalid"

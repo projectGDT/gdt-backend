@@ -1,4 +1,4 @@
-import {Router} from "express"
+import {Express} from "express"
 import {matches} from "./utils/digest"
 import {validator} from "@exodus/schemasafe"
 import {PrismaClient} from "@prisma/client"
@@ -17,7 +17,7 @@ const loginValidator = validator({
 })
 const qidRegex = /^[1-9][0-9]{4,9}$/
 
-module.exports = (router: Router, prisma: PrismaClient) => router.post("/login", async (req, res) => {
+module.exports = (app: Express, prisma: PrismaClient) => app.post("/login", async (req, res) => {
     if (!loginValidator(req.body)) {
         res.status(400).end()
         return
