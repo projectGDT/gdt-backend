@@ -12,7 +12,6 @@ model Player {
   qid Int @unique
   username String @unique
   pwFormatted Bytes
-  avatarLink String @default("")
 
   profiles Profile[]
 
@@ -24,9 +23,10 @@ model Player {
 
 model Server {
   id Int @id @default(autoincrement())
+  groupId Int
   name String
   logoLink String
-  coverLink Json
+  coverLink String
   introduction String
 
   owner Player @relation("owning", fields: [ownerId], references: [id], onDelete: NoAction)
@@ -105,14 +105,15 @@ model ApplyingSession {
   serverId Int
   payload Json
   submittedAt DateTime
-  status SessionStatus
-  handledBy Int @default(-1) // unhandled -> -1
+  state SessionState
+  handledBy Int @default(-1) // Initially the session is unhandled
 }
 
-enum SessionStatus {
+enum SessionState {
   REVIEWING
   ACCEPTED
   REJECTED
+  FINISHED // After the player joins the QQ group
 }
 
 model PreRegisteredPlayer {
@@ -121,7 +122,7 @@ model PreRegisteredPlayer {
   username String @unique
   pwFormatted Bytes
   expiresAt DateTime
-  invitorServerId Int // no invitor -> -1
+  invitorServerId Int // no invitor: -1
 }
 
 model InvitationCode {
@@ -129,5 +130,5 @@ model InvitationCode {
   value String @id
   issuedBy Int
   expiresAt DateTime
-  reuseableTimes Int // infinite times -> -1
+  reuseableTimes Int // infinite times: -1
 }
