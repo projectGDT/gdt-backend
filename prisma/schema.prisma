@@ -76,12 +76,12 @@ model Profile {
   // Xbox: Xbox Gamer Tag
 }
 
-model JavaServerMeta {
+model JavaRemote {
   serverId Int @id
   address String
-  port Int @default(25565)
+  port Int
   coreVersion String
-  compatibleVersions String @default("")
+  compatibleVersions String
   uniqueIdProvider Int // defined above
 
   isModded Boolean
@@ -89,12 +89,12 @@ model JavaServerMeta {
   // The resource pack is expected be provided directly by the server.
 }
 
-model BedrockServerMeta {
+model BedrockRemote {
   serverId Int @id
   address String
-  port Int @default(19132)
+  port Int
   coreVersion String
-  compatibleVersions String @default("")
+  compatibleVersions String
 
   // The resource packs and add-ons are expected be provided directly by the server.
 }
