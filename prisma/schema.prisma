@@ -9,13 +9,19 @@ datasource db {
 
 model Player {
   id Int @id @default(autoincrement())
+
   qid Int @unique
+
   username String @unique
-  pwFormatted Bytes
+  // unique alias only for login
+
+  pwDigested Bytes
+  // password, digested using PBKDF2.
 
   profiles Profile[]
 
   ownedServers Server[] @relation("owning")
+
   involvedServers PlayersInServers[] @relation("involving")
 
   isSiteAdmin Boolean
@@ -23,18 +29,27 @@ model Player {
 
 model Server {
   id Int @id @default(autoincrement())
+
   groupId Int
+
   name String
+
   logoLink String
+
   coverLink String
+
   introduction String
 
   owner Player @relation("owning", fields: [ownerId], references: [id], onDelete: NoAction)
+  ownerId Int
+
   players PlayersInServers[] @relation("involving")
 
-  applyingPolicy ApplyingPolicy
+  javaRemote JavaRemote?
 
-  ownerId Int
+  bedrockRemote BedrockRemote?
+
+  applyingPolicy ApplyingPolicy
 }
 
 enum ApplyingPolicy {
@@ -45,13 +60,15 @@ enum ApplyingPolicy {
 
 model PlayersInServers {
   player Player @relation("involving", fields: [playerId], references: [id], onDelete: Cascade)
-  server Server @relation("involving", fields: [serverId], references: [id], onDelete: Cascade)
-
   playerId Int
+
+  server Server @relation("involving", fields: [serverId], references: [id], onDelete: Cascade)
   serverId Int
+
   @@id([playerId, serverId])
 
   isOperator Boolean
+  // whether the player OPERATES the server
 }
 
 model Profile {
@@ -77,36 +94,62 @@ model Profile {
 }
 
 model JavaRemote {
+  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
   serverId Int @id
+
   address String
+
   port Int
+
   coreVersion String
-  compatibleVersions String
-  uniqueIdProvider Int // defined above
+
+  compatibleVersions Json
+  // an array, whose items are strings and two-item arrays.
+  // 1) string: a single version.
+  // 2) array: a range of versions (min and max, inclusive).
+  // example:
+  // ["1.19", "1.20", ["1.20.2", "1.20.4"]]
+
+  uniqueIdProvider Int
 
   isModded Boolean
-
+  // whether the server is modded
   // The resource pack is expected be provided directly by the server.
 }
 
 model BedrockRemote {
+  server Server @relation(fields: [serverId], references: [id])
   serverId Int @id
+
   address String
+
   port Int
+
   coreVersion String
+
   compatibleVersions String
+
+  // the uniqueIdProvier of BedrockRemote is fixed to -3 (Xbox Live).
 
   // The resource packs and add-ons are expected be provided directly by the server.
 }
 
 model ApplyingSession {
   id Int @id
+  // ApplyingSessions are deferredly loaded, so no @relation annotations are used.
+
   playerId Int
+
   serverId Int
+
   payload Json
+
   submittedAt DateTime
+
   state SessionState
-  handledBy Int @default(-1) // Initially the session is unhandled
+
+  handledBy Int @default(-1)
+  // Initially the session is unhandled
 }
 
 enum SessionState {
@@ -118,17 +161,28 @@ enum SessionState {
 
 model PreRegisteredPlayer {
   passkey String @id
-  qid BigInt
+  // a UUID
+
+  qid Int
+
   username String @unique
-  pwFormatted Bytes
-  expiresAt DateTime
-  invitorServerId Int // no invitor: -1
+
+  pwDigested Bytes
+
+  expiresAt Int
+
+  invitationCode String
 }
 
 model InvitationCode {
   serverId Int
+
   value String @id
+  // a UUID
+
   issuedBy Int
-  expiresAt DateTime
+
+  expiresAt Int
+
   reuseableTimes Int // infinite times: -1
 }
