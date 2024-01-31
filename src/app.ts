@@ -27,6 +27,9 @@ require("./login")(app, prisma)
 
 require("./post-login/use-middleware")(app)
 
+require("./post-login/profile/bind/java-microsoft")(app, prisma)
+require("./post-login/profile/bind/xbox")(app, prisma)
+
 app.listen(port, () => {
     console.log(`Start Listening on port ${port}`)
 })
