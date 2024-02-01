@@ -35,7 +35,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/login", asyn
             {username: username}            // use username
     })
         .then(async player => {
-            if (!matches(password, player.pwFormatted))
+            if (!matches(password, player.pwDigested))
                 return Promise.reject()
             const payload = {
                 id: player.id,
