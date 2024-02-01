@@ -4,6 +4,7 @@ import {PrismaClient} from "@prisma/client";
 import {digest} from "../utils/digest";
 import {qidExists} from "./check-qid";
 import {usernameExists} from "./check-username";
+import {randomUUID} from "node:crypto";
 
 const registerSubmitValidator = validator({
     type: "object",
@@ -17,6 +18,10 @@ const registerSubmitValidator = validator({
     required: ["qid", "username", "password", "invitationCode", "cf-turnstile-response"],
     additionalProperties: false
 })
+
+const validityPeriod = 10 * 60 * 1000 // ten minutes
+
+const emailAddr = "service@gdt.pub"
 
 module.exports = (app: Express, prisma: PrismaClient) => app.post("/register/submit", async (req, res) => {
     if (!registerSubmitValidator(req.body)) {
@@ -49,29 +54,34 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/register/sub
         return
     }
 
-    let invitorServerId = -1
     if (invitationCode != null) {
-        const codeObject = await prisma.invitationCode.findUnique({
+        if (await prisma.invitationCode.findUnique({
             where: {
                 value: invitationCode
             }
-        })
-        if (codeObject == null) {
+        }) == null) {
             res.status(400).json({
                 reason: "wrong-invitation-code"
             })
             return
         }
-        invitorServerId = codeObject.serverId // for test, currently unused
     }
 
-    // mail api not implemented, just for test, add players without mail verification
-    prisma.player.create({
+    const passkey = randomUUID()
+
+    await prisma.preRegisteredPlayer.create({
         data: {
+            passkey: passkey,
             qid: qid,
             username: username,
-            pwFormatted: digest(password),
-            isSiteAdmin: false
+            pwDigested: digest(password),
+            expiresAt: Date.now() + validityPeriod,
+            invitationCode: invitationCode as string
         }
+    }).then(_player => {
+        res.json({
+            emailAddr: emailAddr,
+            passkey: passkey
+        })
     })
 })
