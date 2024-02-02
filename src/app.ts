@@ -1,8 +1,8 @@
-import express = require("express")
+import * as express from "express"
 const app = express()
 const port = 14590 // for tests
 
-import cors = require("cors")
+import * as cors from "cors"
 
 import {PrismaClient} from "@prisma/client"
 const prisma = new PrismaClient()
