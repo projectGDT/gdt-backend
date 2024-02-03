@@ -21,7 +21,7 @@ const registerSubmitValidator = validator({
 
 const validityPeriod = 10 * 60 * 1000 // ten minutes
 
-const emailAddr = "service@gdt.pub"
+const emailAddr = "rc@gdt.pub"
 
 module.exports = (app: Express, prisma: PrismaClient) => app.post("/register/submit", async (req, res) => {
     if (!registerSubmitValidator(req.body)) {
