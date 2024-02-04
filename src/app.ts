@@ -10,6 +10,9 @@ const prisma = new PrismaClient()
 import {randomBytes} from "node:crypto"
 export const jwtSecret = randomBytes(256)
 
+import {GDTEventEmitter} from "./event-base"
+export const emitter = new GDTEventEmitter()
+
 global.appRoot = __dirname
 
 app.use(cors({
