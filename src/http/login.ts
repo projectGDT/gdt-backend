@@ -1,9 +1,9 @@
 import {Express} from "express"
-import {matches} from "./utils/digest"
+import {matches} from "../utils/digest"
 import {validator} from "@exodus/schemasafe"
 import {PrismaClient} from "@prisma/client"
 import jwt = require("jsonwebtoken")
-import {jwtSecret} from "./app"
+import {jwtSecret} from "../app"
 
 const loginValidator = validator({
     type: "object",
@@ -24,7 +24,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/login", asyn
     }
 
     const {username, password, ["cf-turnstile-response"]: cfTurnstileResponse} = req.body
-    if (!(await require("./utils/captcha-verify")(cfTurnstileResponse))) {
+    if (!(await require("../utils/captcha-verify")(cfTurnstileResponse))) {
         res.status(400).end()
         return
     }
@@ -49,5 +49,5 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/login", asyn
             }
             res.json({...payload, jwt: jwt.sign(payload, jwtSecret, {expiresIn: "12h"})})
         })
-        .catch(error => res.status(400).end())
+        .catch(_error => res.status(400).end())
 })

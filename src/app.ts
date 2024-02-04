@@ -19,16 +19,16 @@ app.use(cors({
 
 app.use(express.json())
 
-require("./register/check-qid")(app, prisma)
-require("./register/check-username")(app, prisma)
-require("./register/submit")(app, prisma)
+require("./http/register/check-qid")(app, prisma)
+require("./http/register/check-username")(app, prisma)
+require("./http/register/submit")(app, prisma)
 
-require("./login")(app, prisma)
+require("./http/login")(app, prisma)
 
-require("./post-login/use-middleware")(app)
+require("./http/post-login/use-middleware")(app)
 
-require("./post-login/profile/bind/java-microsoft")(app, prisma)
-require("./post-login/profile/bind/xbox")(app, prisma)
+require("./http/post-login/profile/bind/java-microsoft")(app, prisma)
+require("./http/post-login/profile/bind/xbox")(app, prisma)
 
 app.listen(port, () => {
     console.log(`Start Listening on port ${port}`)

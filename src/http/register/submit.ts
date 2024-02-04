@@ -1,7 +1,7 @@
 import {validator} from "@exodus/schemasafe";
 import {Express} from "express";
 import {PrismaClient} from "@prisma/client";
-import {digest} from "../utils/digest";
+import {digest} from "../../utils/digest";
 import {qidExists} from "./check-qid";
 import {usernameExists} from "./check-username";
 import {randomUUID} from "node:crypto";
@@ -33,7 +33,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/register/sub
 
     const {qid, username, password, invitationCode, ["cf-turnstile-response"]: cfTurnstileResponse} = req.body
 
-    if (!await require("../utils/captcha-verify")(cfTurnstileResponse)) {
+    if (!await require("../../utils/captcha-verify")(cfTurnstileResponse)) {
         res.status(400).json({
             reason: "bad-captcha-response"
         })
