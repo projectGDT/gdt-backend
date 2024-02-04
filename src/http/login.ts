@@ -40,7 +40,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/login", asyn
             const payload = {
                 id: player.id,
                 isSiteAdmin: player.isSiteAdmin,
-                authorizedServers: await prisma.playersInServers.findMany({
+                authorizedServers: await prisma.playerInServer.findMany({
                     where: {
                         playerId: player.id,
                         isOperator: true
