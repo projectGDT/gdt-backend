@@ -6,11 +6,11 @@ import {clearTimeout} from "node:timers";
 
 class EmptyCache {
     async getCached () {}
-    async setCached (value: any) {}
-    async setCachedPartial (value: any) {}
+    async setCached (_value: any) {}
+    async setCachedPartial (_value: any) {}
 }
 
-function emptyCacheFactory(object: any) {
+function emptyCacheFactory(_object: any) {
     return new EmptyCache()
 }
 
