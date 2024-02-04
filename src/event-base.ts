@@ -1,9 +1,9 @@
 import {EventEmitter} from "node:events";
 
-export class GDTEvent {
+export abstract class GDTEvent {
     readonly typeId: string
 
-    constructor(typeId: string) {
+    protected constructor(typeId: string) {
         this.typeId = typeId
     }
 }
