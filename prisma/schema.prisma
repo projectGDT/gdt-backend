@@ -22,7 +22,7 @@ model Player {
 
   ownedServers Server[] @relation("owning")
 
-  involvedServers PlayersInServers[] @relation("involving")
+  involvedServers PlayerInServer[] @relation("involving")
 
   isSiteAdmin Boolean
 }
@@ -43,7 +43,7 @@ model Server {
   owner Player @relation("owning", fields: [ownerId], references: [id], onDelete: NoAction)
   ownerId Int
 
-  players PlayersInServers[] @relation("involving")
+  players PlayerInServer[] @relation("involving")
 
   javaRemote JavaRemote?
 
@@ -58,7 +58,7 @@ enum ApplyingPolicy {
   BY_FORM
 }
 
-model PlayersInServers {
+model PlayerInServer {
   player Player @relation("involving", fields: [playerId], references: [id], onDelete: Cascade)
   playerId Int
 
