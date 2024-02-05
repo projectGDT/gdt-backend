@@ -3,6 +3,7 @@ import {PrismaClient} from "@prisma/client";
 import {Request} from "express-jwt";
 import {Authflow, Titles} from "prismarine-auth";
 import {clearTimeout} from "node:timers";
+import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 
 class EmptyCache {
     async getCached () {}
@@ -16,7 +17,7 @@ function emptyCacheFactory(_object: any) {
 
 const sessionLifetime = 300 * 1000
 
-module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/profile/bind/java-microsoft", async (req: Request, res) => {
+module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/profile/bind/java-microsoft", (req: Request, res) => {
     res.writeHead(200, {
         "Connection": "keep-alive",
         "Cache-Control": "no-cache",
@@ -48,41 +49,28 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pr
 
     let timeoutRef: NodeJS.Timeout
 
-    const result = await Promise.race([
+    Promise.race([
         authFlow.getMinecraftJavaToken({
             fetchProfile: true
         }).then(tokenResponse => {
             const idStr = tokenResponse.profile.id
             return {
-                success: true,
                 uuid: `${idStr.slice(0, 8)}-${idStr.slice(8, 12)}-${idStr.slice(12, 16)}-${idStr.slice(16, 20)}-${idStr.slice(20, /* towards the end */)}`,
                 playerName: tokenResponse.profile.name
             }
-        }).catch(_err => {
-            return {
-                success: false,
-                reason: "internal-error"
-            }
-        }),
-        new Promise<{ success: boolean, reason: string }>((resolve, _reject) => {
-            timeoutRef = setTimeout(() => {
-                resolve({
-                    success: false,
-                    reason: "timeout"
-                })
-            }, sessionLifetime)
+        }).catch(_err => Promise.reject(new Error("internal-error"))),
+        new Promise<{ success: boolean, reason: string }>((_resolve, reject) => {
+            timeoutRef = setTimeout(() => reject(new Error("timeout")), sessionLifetime)
+            // the original lifetime, 900 seconds, is too long
         })
-    ])
-    // the original lifetime, 900 seconds, is too long
-
-    if (result.success) {
+    ]).then(result => {
         clearTimeout(timeoutRef)
         const {uuid, playerName} = <{
             success: boolean
             uuid: string,
             playerName: string
         }>result
-        await prisma.profile.create({
+        return prisma.profile.create({
             data: {
                 uniqueIdProvider: -1, // Java Microsoft
                 uniqueId: uuid,
@@ -90,8 +78,20 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pr
                 cachedPlayerName: playerName
             }
         })
-    }
-
-    res.write(`data: ${JSON.stringify(result)}`)
-    res.end()
+    }).then(
+        profile => ({
+            success: true,
+            uuid: profile.uniqueId,
+            playerName: profile.cachedPlayerName
+        })
+    ).catch(err => (err instanceof PrismaClientKnownRequestError && err.code === "P2003") ? ({
+        success: false,
+        reason: "already-exists"
+    }) : ({
+        success: false,
+        reason: (<Error>err).message
+    })).then(obj => {
+        res.write(`data: ${JSON.stringify(obj)}`)
+        res.end()
+    })
 })
