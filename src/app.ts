@@ -28,7 +28,7 @@ require("./http/register/submit")(app, prisma)
 
 require("./http/login")(app, prisma)
 
-require("./http/post-login/use-middleware")(app)
+require("./utils/auth-middleware")(app)
 
 require("./http/post-login/profile/bind/java-microsoft")(app, prisma)
 require("./http/post-login/profile/bind/xbox")(app, prisma)
