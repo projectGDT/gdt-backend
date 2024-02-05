@@ -16,5 +16,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/register/chec
         res.status(400).end()
         return
     }
-    res.json({exists: await qidExists(parseInt(req.params.qid), prisma)})
+
+    qidExists(parseInt(req.params.qid), prisma)
+        .then(exists => res.json({exists: exists}))
 })

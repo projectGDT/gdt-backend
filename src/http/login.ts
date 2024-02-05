@@ -29,25 +29,23 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/login", asyn
         return
     }
 
-    await prisma.player.findUniqueOrThrow({
+    prisma.player.findUniqueOrThrow({
         where: username.match(qidRegex) ?   // check if "username" is a valid qid
             {qid: parseInt(username)} :     // use qid
             {username: username}            // use username
-    })
-        .then(async player => {
-            if (!matches(password, player.pwDigested))
-                return Promise.reject()
-            const payload = {
-                id: player.id,
-                isSiteAdmin: player.isSiteAdmin,
-                authorizedServers: await prisma.playerInServer.findMany({
-                    where: {
-                        playerId: player.id,
-                        isOperator: true
-                    }
-                }).then(result => result.map(entry => entry.serverId))
-            }
-            res.json({...payload, jwt: jwt.sign(payload, jwtSecret, {expiresIn: "12h"})})
-        })
-        .catch(_error => res.status(400).end())
+    }).then(async player => {
+        if (!matches(password, player.pwDigested))
+            return Promise.reject()
+        const payload = {
+            id: player.id,
+            isSiteAdmin: player.isSiteAdmin,
+            authorizedServers: await prisma.playerInServer.findMany({
+                where: {
+                    playerId: player.id,
+                    isOperator: true
+                }
+            }).then(result => result.map(entry => entry.serverId))
+        }
+        res.json({...payload, jwt: jwt.sign(payload, jwtSecret, {expiresIn: "12h"})})
+    }).catch(_error => res.status(400).end())
 })

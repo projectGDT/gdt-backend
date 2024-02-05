@@ -11,7 +11,7 @@ const profileBindXboxValidator = validator({
     }
 })
 
-module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/profile/bind/java-microsoft", async (req: Request, res) => {
+module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/profile/bind/java-microsoft", (req: Request, res) => {
     if (!profileBindXboxValidator(req.body)) {
         res.status(400).end()
         return
@@ -19,23 +19,18 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/p
 
     const {userToken} = req.body
 
-    await xbl.exchangeTokenForXSTSToken(userToken)
-        .then(async response => {
-            const xuid = response.DisplayClaims.xui[0].xid
-            const xboxGamerTag = response.DisplayClaims.xui[0].gtg
-
-            await prisma.profile.create({
-                data: {
-                    uniqueIdProvider: -3, // Xbox
-                    uniqueId: xuid,
-                    playerId: req.auth.id,
-                    cachedPlayerName: xboxGamerTag
-                }
-            })
-
-            res.json({
-                xuid: xuid,
-                xboxGamerTag: xboxGamerTag
-            })
-        }).catch(_err => res.status(502).end())
+    xbl.exchangeTokenForXSTSToken(userToken).then(response => ({
+        xuid: response.DisplayClaims.xui[0].xid,
+        xboxGamerTag: response.DisplayClaims.xui[0].gtg
+    })).then(({xuid, xboxGamerTag}) => prisma.profile.create({
+        data: {
+            uniqueIdProvider: -3, // Xbox
+            uniqueId: xuid,
+            playerId: req.auth.id,
+            cachedPlayerName: xboxGamerTag
+        }
+    })).then(({uniqueId, cachedPlayerName}) => res.json({
+        xuid: uniqueId,
+        xboxGamerTag: cachedPlayerName
+    })).catch(_err => res.status(502).end())
 })

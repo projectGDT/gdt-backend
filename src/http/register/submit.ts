@@ -15,7 +15,7 @@ const registerSubmitValidator = validator({
         invitationCode: {type: "string"},
         "cf-turnstile-response": {type: "string"}
     },
-    required: ["qid", "username", "password", "invitationCode", "cf-turnstile-response"],
+    required: ["qid", "username", "password", "cf-turnstile-response"],
     additionalProperties: false
 })
 
@@ -69,7 +69,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/register/sub
 
     const passkey = randomUUID()
 
-    await prisma.preRegisteredPlayer.create({
+    prisma.preRegisteredPlayer.create({
         data: {
             passkey: passkey,
             qid: qid,
