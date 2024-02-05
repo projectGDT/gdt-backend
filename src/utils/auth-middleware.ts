@@ -1,5 +1,5 @@
 import {Express, NextFunction, Response} from "express"
-import {jwtSecret} from "../../app"
+import {jwtSecret} from "../app"
 import {expressjwt, Request as JWTRequest} from "express-jwt";
 
 module.exports = (app: Express) => {
