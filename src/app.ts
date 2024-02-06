@@ -1,9 +1,9 @@
-const express = require("express");
+import * as express from "express";
 const app = express();
-const expressWs = require("express-ws")(app);
+require("express-ws")(app); // add ws support to app
 const port = 14590 // for tests
 
-const cors = require("cors");
+import * as cors from "cors";
 
 import {PrismaClient} from "@prisma/client"
 const prisma = new PrismaClient()
@@ -27,7 +27,7 @@ app.use(express.json())
 require("./http/register/check-qid")(app, prisma)
 require("./http/register/check-username")(app, prisma)
 require("./ws/register/submit")(app, prisma)
-require("./http/register/confirm")(app)
+require("./http/register/worker-callback")(app)
 
 require("./http/login")(app, prisma)
 
