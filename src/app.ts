@@ -1,6 +1,6 @@
-import * as express from "express";
-const app = express();
-require("express-ws")(app); // add ws support to app
+const express = require("express")
+const expressWs = require("express-ws")
+const app = expressWs(express()).app // add ws support
 const port = 14590 // for tests
 
 import * as cors from "cors";

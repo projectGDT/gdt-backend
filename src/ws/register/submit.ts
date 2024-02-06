@@ -1,10 +1,10 @@
-import { Express } from "express";
 import { PrismaClient } from "@prisma/client";
 import { digest } from "../../utils/digest";
 import { qidExists } from "../../http/register/check-qid";
 import { usernameExists } from "../../http/register/check-username";
 import { randomUUID } from "node:crypto";
 import { validator } from "@exodus/schemasafe";
+import * as expressWs from "express-ws";
 
 const validityPeriod = 10 * 60 * 1000; // 10 minutes
 const emailAddr = "rc@gdt.pub";
@@ -12,7 +12,7 @@ const emailAddr = "rc@gdt.pub";
 // 键：passkey  值：由/register/confirm进行回调的函数
 export const unverifiedPasskeysCallback = new Map();
 
-module.exports = (app: any, prisma: PrismaClient) => app.ws("/register/submit", async (ws, req) => {
+module.exports = (app: expressWs.Application, prisma: PrismaClient) => app.ws("/register/submit", async (ws, req) => {
     // 检查输入内容是否符合格式要求
     const jsonValidator = validator({
         type: "object",
