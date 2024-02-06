@@ -1,6 +1,7 @@
 import * as fs from "fs";
+import {dataRoot} from "../app";
 
-const captchaSiteSecret = fs.readFileSync(`${__dirname}/captcha-site-secret.secret`).toString()
+const captchaSiteSecret = fs.readFileSync(`${dataRoot}/captcha-site-secret.secret`).toString()
 const siteVerifyUrl = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 
 module.exports = async (cfTurnstileResponse: string): Promise<boolean> => {

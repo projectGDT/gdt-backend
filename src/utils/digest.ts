@@ -1,7 +1,8 @@
 import crypto = require("crypto")
 import fs = require("node:fs")
+import {dataRoot} from "../app";
 
-const salt = fs.readFileSync(`${__dirname}/salt.secret`).toString()
+const salt = fs.readFileSync(`${dataRoot}/salt.secret`).toString()
 const iterations = 1000
 const keyLength = 64
 const digestAlgorithm = "sha512"

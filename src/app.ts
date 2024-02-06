@@ -13,7 +13,8 @@ export const jwtSecret = randomBytes(256)
 import {GDTEventEmitter} from "./event-base"
 export const emitter = new GDTEventEmitter()
 
-global.appRoot = __dirname
+export const appRoot = `${__dirname}/..`
+export const dataRoot = `${appRoot}/data`
 
 app.use(cors({
     origin: "http://localhost:3000", // for tests
