@@ -23,6 +23,10 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
                 playerId: req.auth.id,
                 uniqueIdProvider: uniqueIdProvider
             }
+        }).then(result => {
+            if (result.count === 0)
+                res.status(404).end()
+            else res.status(200).json({}).end()
         })
     }
 )
