@@ -23,11 +23,11 @@ projectGDT 的子项目之一，也是最为基础的子项目。
 
 参照 [此处](https://www.prisma.io/docs/orm/overview/databases) 选择数据库种类并配置。
 
-你应当创建 `.env` 文件，其中包含 `DATABASE_URL` 属性。
+你应当创建 `/.env` 文件，其中包含 `DATABASE_URL` 属性。
 
 你可能还需要更改 `/prisma/schema.prisma` 中的 `db.provider`。
 
-此项目使用是 MySQL 8.1。其他数据库的兼容性未经测试。
+此项目使用的是 MySQL 8.1。其他数据库的兼容性未经测试。
 
 ### 生成 Prisma Client
 
@@ -41,9 +41,9 @@ npx prisma db push
 
 在根目录下创建 `/data` 文件夹，创建如下文件：
 ```
-captcha-site-secret.secret
-client-secret.secret
-salt.secret
+/data/captcha-site-secret.secret
+/data/client-secret.secret
+/data/salt.secret
 ```
 
 - 将从 Cloudflare Turnstile 中获取的 `site secret` 填入 `captcha-site-secret.secret`。
