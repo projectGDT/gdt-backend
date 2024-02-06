@@ -2,7 +2,7 @@
 import { Express } from "express";
 import { unverifiedPasskeysCallback } from "../../ws/register/submit";
 
-module.exports = (app: Express) => app.get("/register/confirm", async (req, res) => {
+module.exports = (app: Express) => app.get("/register/worker-callback", async (req, res) => {
     const passkey = req.query.passkey;
     if (!passkey) {
         res.status(400).end();
