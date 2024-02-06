@@ -32,12 +32,16 @@ require("./http/login")(app, prisma)
 require("./utils/auth-middleware")(app)
 
 require("./http/post-login/profile/fetch")(app, prisma)
+require("./http/post-login/profile/delete")(app, prisma)
 require("./http/post-login/profile/bind/java-microsoft")(app, prisma)
 require("./http/post-login/profile/bind/xbox")(app, prisma)
 
 require("./http/post-login/me/servers")(app, prisma)
 require("./http/post-login/me/discover/list")(app, prisma)
 require("./http/post-login/me/discover/query")(app, prisma)
+
+require("./http/post-login/people/server-players")(app, prisma)
+require("./http/post-login/people/shared-servers")(app, prisma)
 
 app.listen(port, () => {
     console.log(`Start Listening on port ${port}`)
