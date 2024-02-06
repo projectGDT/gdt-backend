@@ -13,7 +13,8 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
                 maximum: -1,
                 minimum: -3
             }
-        }
+        },
+        required: ["uniqueIdProvider"]
     }),
     async (req: Request, res) => {
         const {uniqueIdProvider} = req.body

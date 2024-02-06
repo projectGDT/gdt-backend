@@ -10,7 +10,8 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
         type: "object",
         properties: {
             userToken: {type: "string"}
-        }
+        },
+        required: ["userToken"]
     }),
     (req: Request, res) => {
         const {userToken} = req.body
