@@ -29,6 +29,8 @@ require("./http/register/submit")(app, prisma)
 
 require("./http/login")(app, prisma)
 
+require("./http/server-meta/full")(app, prisma)
+
 require("./utils/auth-middleware")(app)
 
 require("./http/post-login/profile/fetch")(app, prisma)
