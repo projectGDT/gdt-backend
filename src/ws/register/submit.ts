@@ -9,8 +9,17 @@ import {jsonValidateWs} from "../../utils/json-schema-middleware";
 const validityPeriod = 10 * 60 * 1000; // 10 minutes
 const emailAddr = "rc@gdt.pub";
 
+export type PreRegistryInfo = {
+    qid: number,
+    passkey: string
+}
+
+export type CallbackWrapper = {
+    callback: () => void
+}
+
 // 键：passkey  值：由/register/confirm进行回调的函数
-export const unverifiedPasskeysCallback = new Map();
+export const unverifiedPasskeysCallback = new Map<PreRegistryInfo, CallbackWrapper>();
 
 module.exports = (app: expressWs.Application, prisma: PrismaClient) => app.ws(
     "/register/submit",
@@ -85,24 +94,30 @@ module.exports = (app: expressWs.Application, prisma: PrismaClient) => app.ws(
         }));
 
         // 添加回调函数，被调用时说明验证成功
-        unverifiedPasskeysCallback.set(passkey, () => {
-            // 添加player到数据库
-            prisma.player.create({
-                data: {
-                    qid: qid,
-                    username: username,
-                    pwDigested: digest(password),
-                    isSiteAdmin: false
-                }
-            });
-            // 完成注册
-            unverifiedPasskeysCallback.delete(passkey);
-            ws.close(200);
+        const preRegistryInfo = {
+            qid: qid,
+            passkey: passkey
+        };
+        unverifiedPasskeysCallback.set(preRegistryInfo, {
+            callback: () => {
+                // 添加player到数据库
+                prisma.player.create({
+                    data: {
+                        qid: qid,
+                        username: username,
+                        pwDigested: digest(password),
+                        isSiteAdmin: false
+                    }
+                });
+                // 完成注册
+                unverifiedPasskeysCallback.delete(preRegistryInfo);
+                ws.close(200);
+            }
         });
 
         // validityPeriod后超时失败
         setTimeout(() => {
-            unverifiedPasskeysCallback.delete(passkey);
+            unverifiedPasskeysCallback.delete(preRegistryInfo);
             ws.send(JSON.stringify({
                 reason: "verify-timeout"
             }));

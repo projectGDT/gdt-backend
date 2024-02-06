@@ -1,18 +1,32 @@
 // cf worker回调函数
 import { Express } from "express";
 import { unverifiedPasskeysCallback } from "../../ws/register/submit";
+import {jsonValidate} from "../../utils/json-schema-middleware";
+import {readFileSync} from "node:fs";
+import {dataRoot} from "../../app";
 
-module.exports = (app: Express) => app.get("/register/worker-callback", async (req, res) => {
-    const passkey = req.query.passkey;
-    if (!passkey) {
-        res.status(400).end();
-        return;
+const _clientSecret = readFileSync(`${dataRoot}/client-secret.secret`)
+
+module.exports = (app: Express) => app.post(
+    "/register/worker-callback",
+    jsonValidate({
+        type: "object",
+        properties: {
+            clientSecret: {type: "string", },
+            qid: {type: "integer"},
+            passkey: {type: "string"}
+        },
+        required: ["clientSecret", "qid", "passkey"]
+    }),
+    (req, res) => {
+        const {clientSecret, qid, passkey} = req.body
+        if (clientSecret !== _clientSecret) {
+            res.status(401).end()
+        }
+        unverifiedPasskeysCallback.get({
+            qid: qid,
+            passkey: passkey
+        })?.callback()
+        res.status(200).end()
     }
-    const callback = unverifiedPasskeysCallback.get(passkey);
-    if (!callback) {
-        res.status(400).end();
-        return;
-    }
-    callback();
-    res.status(200).end();
-});
+)
