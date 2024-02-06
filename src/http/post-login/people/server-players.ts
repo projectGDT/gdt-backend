@@ -1,7 +1,7 @@
 import {Express} from "express";
 import {PrismaClient} from "@prisma/client";
 
-module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/people/server-players/:id", async (req, res) => {
+module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/people/server-players/:id", async (req, res) => {
     let uniqueIdProviders: number[]
     try {
         uniqueIdProviders = await prisma.server.findUniqueOrThrow({
