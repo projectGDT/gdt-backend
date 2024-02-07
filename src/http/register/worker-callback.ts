@@ -1,9 +1,8 @@
-// cf worker回调函数
-import { Express } from "express";
-import { unverifiedPasskeysCallback } from "../../socket.io/register/submit";
+import {Express} from "express";
 import {jsonValidate} from "../../utils/json-schema-middleware";
 import {readFileSync} from "node:fs";
 import {dataRoot} from "../../app";
+import {preRegistries} from "../../socket.io/register/submit";
 
 const _clientSecret = readFileSync(`${dataRoot}/client-secret.secret`)
 
@@ -23,10 +22,8 @@ module.exports = (app: Express) => app.post(
         if (clientSecret !== _clientSecret) {
             res.status(401).end()
         }
-        unverifiedPasskeysCallback.get({
-            qid: qid,
-            passkey: passkey
-        })?.callback()
-        res.status(200).end()
+        preRegistries.emit(`${qid}.${passkey}`, true)
+        res.status(204).end()
+        // although status code makes no sense...
     }
 )

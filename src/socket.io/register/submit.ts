@@ -5,18 +5,12 @@ import { usernameExists } from "../../http/register/check-username";
 import { randomUUID } from "node:crypto";
 import {validator} from "@exodus/schemasafe";
 import {Server} from "socket.io";
+import {EventEmitter} from "node:events";
 
 const validityPeriod = 10 * 60 * 1000; // 10 minutes
 const emailAddr = "rc@gdt.pub";
 
-export type PreRegistryInfo = {
-    qid: number,
-    passkey: string
-}
-
-export type CallbackWrapper = {
-    callback: () => void
-}
+export const preRegistries = new EventEmitter()
 
 const submitValidator = validator({
     type: "object",
@@ -30,9 +24,6 @@ const submitValidator = validator({
     required: ["qid", "username", "password", "cf-turnstile-response"],
     additionalProperties: false
 })
-
-// 键：passkey  值：由/register/confirm进行回调的函数
-export const unverifiedPasskeysCallback = new Map<PreRegistryInfo, CallbackWrapper>();
 
 module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit").on("connection", socket => {
     socket.once("register-info", async payload => {
@@ -96,13 +87,10 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
         })
 
         // 添加回调函数，被调用时说明验证成功
-        const preRegistryInfo = {
-            qid: qid,
-            passkey: passkey
-        };
-        unverifiedPasskeysCallback.set(preRegistryInfo, {
-            callback: () => {
-                // 添加player到数据库
+        const eventName = `${qid}.${passkey}`
+
+        preRegistries.once(eventName, (success: boolean) => {
+            if (success) {
                 prisma.player.create({
                     data: {
                         qid: qid,
@@ -110,21 +98,18 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
                         pwDigested: digest(password),
                         isSiteAdmin: false
                     }
-                });
-                // 完成注册
-                unverifiedPasskeysCallback.delete(preRegistryInfo);
+                })
                 socket.emit("registered")
                 socket.disconnect()
+            } else {
+                socket.emit("error", {
+                    reason: "verify-timeout"
+                })
+                socket.disconnect()
             }
-        });
+        })
 
         // validityPeriod后超时失败
-        setTimeout(() => {
-            unverifiedPasskeysCallback.delete(preRegistryInfo);
-            socket.emit("error", {
-                reason: "verify-timeout"
-            })
-            socket.disconnect()
-        }, validityPeriod);
+        setTimeout(() => preRegistries.emit(eventName, false), validityPeriod);
     })
 })
