@@ -1,6 +1,6 @@
 // cf worker回调函数
 import { Express } from "express";
-import { unverifiedPasskeysCallback } from "../../ws/register/submit";
+import { unverifiedPasskeysCallback } from "../../socket.io/register/submit";
 import {jsonValidate} from "../../utils/json-schema-middleware";
 import {readFileSync} from "node:fs";
 import {dataRoot} from "../../app";

@@ -1,9 +1,9 @@
-import {Express} from "express";
 import {PrismaClient} from "@prisma/client";
-import {Request} from "express-jwt";
 import {Authflow, Titles} from "prismarine-auth";
 import {clearTimeout} from "node:timers";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
+import {Server} from "socket.io";
+import {AuthedSocket} from "../../../../utils/auth-middleware";
 
 class EmptyCache {
     async getCached () {}
@@ -15,15 +15,9 @@ function emptyCacheFactory(_object: any) {
     return new EmptyCache()
 }
 
-const sessionLifetime = 300 * 1000
+const sessionLifetime = 300 * 1000 // five minutes
 
-module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/profile/bind/java-microsoft", (req: Request, res) => {
-    res.writeHead(200, {
-        "Connection": "keep-alive",
-        "Cache-Control": "no-cache",
-        "Content-Type": "text/event-stream" // this indicates a Server-Side Event connection
-    })
-
+module.exports = (io: Server, prisma: PrismaClient) => io.of("/post-login/profile/bind/java-microsoft").on("connection", (socket: AuthedSocket) => {
     let codeWritten = false
 
     const authFlow = new Authflow(
@@ -36,10 +30,10 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pr
         },
         codeResponse => {
             if (!codeWritten) {
-                res.write(`data: ${JSON.stringify({
+                socket.emit("user-code", {
                     userCode: codeResponse.user_code,
                     verificationUri: codeResponse.verification_uri
-                })}\n\n`) // \n\n indicates that a data chunk ends
+                })
                 codeWritten = true
             }
         }
@@ -74,7 +68,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pr
             data: {
                 uniqueIdProvider: -1, // Java Microsoft
                 uniqueId: uuid,
-                playerId: req.auth.id,
+                playerId: socket.userInfo.id,
                 cachedPlayerName: playerName
             }
         })
@@ -90,8 +84,8 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pr
     }) : ({
         success: false,
         reason: (<Error>err).message
-    })).then(obj => {
-        res.write(`data: ${JSON.stringify(obj)}`)
-        res.end()
+    })).then(payload => {
+        socket.emit(payload.success ? "bind-successful" : "bind-failed", payload)
+        socket.disconnect()
     })
 })
