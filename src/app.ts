@@ -4,7 +4,13 @@ const express = require("express")
 
 const app = express() // add socket.io support
 const httpServer = createServer(app)
-const io = new Server(httpServer, { /* options */ });
+const io = new Server(httpServer, {
+    cors: {
+        origin: "http://localhost:3000", // for tests
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
 const port = 14590 // for tests
 
 import * as cors from "cors";
@@ -16,7 +22,7 @@ import {randomBytes} from "node:crypto"
 export const jwtSecret = randomBytes(256)
 
 import {GDTEventEmitter} from "./event-base"
-import {useAuthMiddleware, useAuthMiddlewareSocket} from "./utils/auth-middleware";
+import {useAuthMiddlewareSocket, useAuthMiddleware} from "./utils/auth-middleware";
 export const emitter = new GDTEventEmitter()
 
 export const appRoot = `${__dirname}/..`
@@ -38,8 +44,8 @@ require("./http/login")(app, prisma)
 
 require("./http/server-meta/full")(app, prisma)
 
-useAuthMiddlewareSocket(app, "/post-login")
-useAuthMiddleware(io, /^\/post-login*$/) // protect all branches from /post login
+useAuthMiddleware(app, "/post-login")
+useAuthMiddlewareSocket(io, "/post-login/profile/bind/java-microsoft") // protect all branches from /post login
 
 require("./http/post-login/profile/fetch")(app, prisma)
 require("./http/post-login/profile/delete")(app, prisma)
@@ -53,6 +59,6 @@ require("./http/post-login/me/discover/query")(app, prisma)
 require("./http/post-login/people/server-players")(app, prisma)
 require("./http/post-login/people/shared-servers")(app, prisma)
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
     console.log(`Start Listening on port ${port}`)
 })

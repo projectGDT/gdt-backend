@@ -4,7 +4,7 @@ import {expressjwt, Request as JWTRequest} from "express-jwt";
 import {Server, Socket} from "socket.io";
 const jwt = require("jsonwebtoken")
 
-export function useAuthMiddlewareSocket(app: Express, path: string) {
+export function useAuthMiddleware(app: Express, path: string) {
     app.use(path, expressjwt({
         secret: jwtSecret,
         algorithms: ["HS256"]
@@ -25,7 +25,7 @@ export type AuthedSocket = Socket & {
     }
 }
 
-export function useAuthMiddleware(io: Server, namespace: RegExp) {
+export function useAuthMiddlewareSocket(io: Server, namespace: string) {
     io.of(namespace).use((socket, next) => {
         const token = socket.handshake.auth.token
         jwt.verify(token, jwtSecret, (err: any, res: any) => {
