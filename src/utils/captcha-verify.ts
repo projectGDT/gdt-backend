@@ -11,5 +11,13 @@ module.exports = async (cfTurnstileResponse: string): Promise<boolean> => {
     return fetch(siteVerifyUrl, {
         method: "POST",
         body: siteVerifyData
-    }).then(response => response.json()).then(json => json.success)
+    })
+        .then(response => response.json())
+        .then(json => json.success)
+        .catch(_err => {
+            console.log("Cloudflare service is unavailable")
+            return true
+        })
+    // .catch() as an "emergency brake" in case that the service is unavailable
+    // FUCK YOU GFW
 }
