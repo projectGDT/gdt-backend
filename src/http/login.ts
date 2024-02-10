@@ -4,6 +4,7 @@ import {PrismaClient} from "@prisma/client"
 import jwt = require("jsonwebtoken")
 import {jwtSecret} from "../app"
 import {jsonValidate} from "../utils/json-schema-middleware";
+import {trueOrReject, verifyResponse} from "../utils/captcha-verify";
 const qidRegex = /^[1-9][0-9]{4,9}$/
 
 module.exports = (app: Express, prisma: PrismaClient) => app.post(
@@ -20,19 +21,16 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
     }),
     async (req, res) => {
         const {username, password, ["cf-turnstile-response"]: cfTurnstileResponse} = req.body
-        if (!(await require("../utils/captcha-verify")(cfTurnstileResponse))) {
-            res.status(400).end()
-            return
-        }
-
-        prisma.player.findUniqueOrThrow({
+        trueOrReject(
+            verifyResponse(cfTurnstileResponse)
+        ).then(_result => prisma.player.findUniqueOrThrow({
             where: username.match(qidRegex) ?   // check if "username" is a valid qid
                 {qid: parseInt(username)} :     // use qid
                 {username: username},           // use username
             include: {
                 involvedServers: true
             }
-        }).then(player =>
+        })).then(player =>
             matches(password, player.pwDigested) ? player : Promise.reject()
         ).then(({id, involvedServers}) => res.json({
             jwt: jwt.sign({
@@ -41,6 +39,6 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
                     .filter(entry => entry.isOperator)
                     .map(entry => entry.serverId)
             }, jwtSecret, {expiresIn: "12h"})
-        })).catch(_error => res.status(400).end()) // incorrect credentials
+        })).catch(_error => res.status(400).end())
     }
 )
