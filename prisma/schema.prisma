@@ -23,8 +23,6 @@ model Player {
   ownedServers Server[] @relation("owning")
 
   involvedServers PlayerInServer[] @relation("involving")
-
-  isSiteAdmin Boolean
 }
 
 model Server {

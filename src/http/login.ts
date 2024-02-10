@@ -28,21 +28,19 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
         prisma.player.findUniqueOrThrow({
             where: username.match(qidRegex) ?   // check if "username" is a valid qid
                 {qid: parseInt(username)} :     // use qid
-                {username: username}            // use username
-        }).then(async player => {
-            if (!matches(password, player.pwDigested))
-                return Promise.reject()
-            const payload = {
-                id: player.id,
-                isSiteAdmin: player.isSiteAdmin,
-                authorizedServers: await prisma.playerInServer.findMany({
-                    where: {
-                        playerId: player.id,
-                        isOperator: true
-                    }
-                }).then(result => result.map(entry => entry.serverId))
+                {username: username},           // use username
+            include: {
+                involvedServers: true
             }
-            res.json({...payload, jwt: jwt.sign(payload, jwtSecret, {expiresIn: "12h"})})
-        }).catch(_error => res.status(400).end())
+        }).then(player =>
+            matches(password, player.pwDigested) ? player : Promise.reject()
+        ).then(({id, involvedServers}) => res.json({
+            jwt: jwt.sign({
+                id: id,
+                authorizedServers: involvedServers
+                    .filter(entry => entry.isOperator)
+                    .map(entry => entry.serverId)
+            }, jwtSecret, {expiresIn: "12h"})
+        })).catch(_error => res.status(400).end()) // incorrect credentials
     }
 )
