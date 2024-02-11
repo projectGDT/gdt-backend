@@ -42,7 +42,7 @@ require("./http/register/worker-callback")(app)
 
 require("./http/login")(app, prisma)
 
-require("./http/server-meta/full")(app, prisma)
+require("./http/server-meta")(app, prisma)
 
 useAuthMiddleware(app, "/post-login")
 

@@ -110,9 +110,8 @@ model JavaRemote {
 
   uniqueIdProvider Int
 
-  isModded Boolean
-  // whether the server is modded
-  // The resource pack is expected be provided directly by the server.
+  modpackInfo String?
+  // consists of two parts, ${id or slug}/${versionId}
 }
 
 model BedrockRemote {
