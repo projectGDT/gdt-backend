@@ -18,30 +18,33 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/me
             }
         }
     }).then(result => result
-        .map(({server}) => server)
-        .map(({
-                  id,
-                  name,
-                  logoLink,
-                  applyingPolicy,
-                  javaRemote,
-                  bedrockRemote
-        }) => ({
-            id, name, logoLink, applyingPolicy,
-            ...includeRemote ? {
-                ...javaRemote ? {
-                    javaRemote: {
-                        address: javaRemote.address,
-                        port: javaRemote.port
-                    }
-                } : {},
-                ...bedrockRemote ? {
-                    bedrockRemote: {
-                        address: bedrockRemote.address,
-                        port: bedrockRemote.port
-                    }
-                } : {}
-            } : {}
+        .map(({server, isOperator}) => ({
+            server: ((
+                {
+                    id,
+                    name,
+                    logoLink,
+                    applyingPolicy,
+                    javaRemote,
+                    bedrockRemote
+                }) => ({
+                    id, name, logoLink, applyingPolicy,
+                    ...includeRemote ? {
+                        ...javaRemote ? {
+                            javaRemote: {
+                                address: javaRemote.address,
+                                port: javaRemote.port
+                            }
+                        } : {},
+                        ...bedrockRemote ? {
+                            bedrockRemote: {
+                                address: bedrockRemote.address,
+                                port: bedrockRemote.port
+                            }
+                        } : {}
+                    } : {}
+                }))(server),
+            isOperator
         }))
     ).then(body => {
         res.json(body)
