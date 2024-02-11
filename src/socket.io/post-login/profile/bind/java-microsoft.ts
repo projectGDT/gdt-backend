@@ -28,11 +28,12 @@ function inMemoryCacheFactory (_param: any) {
 
 const sessionLifetime = 300 * 1000 // five minutes
 
-
 module.exports = (io: Server, prisma: PrismaClient) =>{
     useAuthMiddlewareSocket(io, "/post-login/profile/bind/java-microsoft")
 
-    io.of("/post-login/profile/bind/java-microsoft").on("connection", (socket: AuthedSocket) => {
+    io.of("/post-login/profile/bind/java-microsoft").on("connection", (socket) => {
+        const authedSocket = <AuthedSocket>socket
+
         let codeWritten = false
 
         const authFlow = new Authflow(
@@ -84,7 +85,7 @@ module.exports = (io: Server, prisma: PrismaClient) =>{
                     data: {
                         uniqueIdProvider: -1, // Java Microsoft
                         uniqueId: uuid,
-                        playerId: socket.userInfo.id,
+                        playerId: authedSocket.userInfo.id,
                         cachedPlayerName: playerName
                     }
                 });

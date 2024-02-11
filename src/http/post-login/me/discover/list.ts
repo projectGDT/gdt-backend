@@ -25,12 +25,12 @@ function shuffle<T>(array: T[], engine: Engine) {
 }
 
 module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/me/discover/list", async (req: Request, res) => {
-    const mt = MersenneTwister19937.seed(stringHash(req.header("Authorization")))
+    const mt = MersenneTwister19937.seed(stringHash(req.header("Authorization")!))
     prisma.server.findMany({
         where: {
             players: {
                 none: {
-                    playerId: req.auth.id
+                    playerId: req.auth?.id
                 }
             }
         }

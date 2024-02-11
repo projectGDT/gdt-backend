@@ -5,7 +5,7 @@ import {Request} from "express-jwt";
 module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/profile/fetch", async (req: Request, res) => {
     prisma.profile.findMany({
         where: {
-            playerId: req.auth.id
+            playerId: req.auth!.id
         }
     }).then(result => result.map(entry => ({
         uniqueIdProvider: entry.uniqueIdProvider,

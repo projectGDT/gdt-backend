@@ -31,8 +31,8 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
         }).then(({xuid, xboxGamerTag}) => prisma.profile.create({
             data: {
                 uniqueIdProvider: -3, // Xbox
-                uniqueId: xuid,
-                playerId: req.auth.id,
+                uniqueId: xuid!,
+                playerId: req.auth!.id,
                 cachedPlayerName: xboxGamerTag
             }
         })).catch(err => {

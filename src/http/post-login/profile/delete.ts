@@ -21,7 +21,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
 
         prisma.profile.deleteMany /* why does using delete result in a compile error? */ ({
             where: {
-                playerId: req.auth.id,
+                playerId: req.auth!.id,
                 uniqueIdProvider: uniqueIdProvider
             }
         }).then(result => {

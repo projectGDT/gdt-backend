@@ -1,7 +1,7 @@
 import {Express} from "express"
 import {matches} from "../utils/digest"
 import {PrismaClient} from "@prisma/client"
-import jwt = require("jsonwebtoken")
+import jwt from "jsonwebtoken"
 import {jwtSecret} from "../app"
 import {jsonValidate} from "../utils/json-schema-middleware";
 import {trueOrReject, verifyResponse} from "../utils/captcha-verify";

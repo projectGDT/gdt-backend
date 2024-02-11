@@ -1,5 +1,5 @@
-import crypto = require("crypto")
-import fs = require("node:fs")
+import crypto from "crypto"
+import fs from "node:fs"
 import {dataRoot} from "../app";
 
 const salt = fs.readFileSync(`${dataRoot}/salt.secret`).toString()

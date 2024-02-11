@@ -20,7 +20,6 @@ export function useAuthMiddleware(app: Express, path: string) {
 export type AuthedSocket = Socket & {
     userInfo: {
         id: number,
-        isSiteAdmin: boolean,
         authorizedServer: number[]
     }
 }

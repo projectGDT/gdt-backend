@@ -7,7 +7,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/me
 
     prisma.playerInServer.findMany({
         where: {
-            playerId: req.auth.id
+            playerId: req.auth!.id
         },
         include: {
             server: {
