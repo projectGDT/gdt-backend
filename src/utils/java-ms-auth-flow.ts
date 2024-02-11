@@ -45,7 +45,7 @@ async function awaitAccessToken(deviceCode: string, interval: number) {
     const expireTime = Date.now() + alivePeriod
     while (Date.now() < expireTime) {
         await new Promise(resolve => setTimeout(resolve,interval * 1000)) // delay {interval} seconds
-        const nullOrToken: string | null = await fetch(Endpoints.LiveTokenRequest + '?client_id=' + this.clientId, {
+        const nullOrToken: string | null = await fetch(Endpoints.LiveTokenRequest + '?client_id=' + minecraftJavaTitle, {
             method: "POST",
             body: new URLSearchParams({
                 client_id: minecraftJavaTitle,

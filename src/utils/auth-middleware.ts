@@ -17,10 +17,12 @@ export function useAuthMiddleware(app: Express, path: string) {
     })
 }
 
-export type AuthedSocket = Socket & {
-    userInfo: {
-        id: number,
-        authorizedServer: number[]
+declare module 'socket.io' {
+    interface Socket {
+        userInfo: {
+            id: number,
+            authorizedServer: number[]
+        }
     }
 }
 
@@ -31,7 +33,7 @@ export function useAuthMiddlewareSocket(io: Server, namespace: string) {
             if (err) {
                 socket.disconnect(true)
             } else {
-                socket["userInfo"] = res
+                socket.userInfo = res
                 next()
             }
         })

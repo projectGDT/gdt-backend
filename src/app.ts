@@ -13,7 +13,7 @@ const io = new Server(httpServer, {
 });
 const port = 14590 // for tests
 
-import * as cors from "cors";
+import cors from "cors";
 
 import {PrismaClient} from "@prisma/client"
 const prisma = new PrismaClient()

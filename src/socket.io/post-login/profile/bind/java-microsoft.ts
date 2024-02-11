@@ -2,7 +2,7 @@ import {PrismaClient} from "@prisma/client";
 import {Authflow, Titles} from "prismarine-auth";
 import {clearTimeout} from "node:timers";
 import {Server} from "socket.io";
-import {AuthedSocket, useAuthMiddlewareSocket} from "../../../../utils/auth-middleware";
+import {useAuthMiddlewareSocket} from "../../../../utils/auth-middleware";
 
 // a minimum cache storage, code from prismarine-auth/docs/API.md
 
@@ -32,7 +32,7 @@ module.exports = (io: Server, prisma: PrismaClient) =>{
     useAuthMiddlewareSocket(io, "/post-login/profile/bind/java-microsoft")
 
     io.of("/post-login/profile/bind/java-microsoft").on("connection", (socket) => {
-        const authedSocket = <AuthedSocket>socket
+        const authedSocket = socket
 
         let codeWritten = false
 
