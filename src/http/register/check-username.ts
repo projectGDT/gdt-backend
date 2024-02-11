@@ -5,9 +5,7 @@ export const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{2,15}$/
 
 export async function usernameExists(username: string, prisma: PrismaClient) {
     return prisma.player.findUnique({
-        where: {
-            username: username
-        }
+        where: {username}
     }).then(result => result != null)
 }
 
@@ -17,5 +15,5 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/register/chec
         return
     }
 
-    usernameExists(req.params.username, prisma).then(exists => res.json({exists: exists}))
+    usernameExists(req.params.username, prisma).then(exists => res.json({exists}))
 })

@@ -43,5 +43,5 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pe
             )
             return result
         }
-    ).then(res.json)
+    ).then(body => res.json(body))
 })

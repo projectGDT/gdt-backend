@@ -3,7 +3,7 @@ import {PrismaClient} from "@prisma/client";
 import {Request} from "express-jwt";
 
 module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/server-meta/:id", async (req: Request, res) => {
-    prisma.server.findUnique({
+    prisma.server.findUniqueOrThrow({
         where: {
             id: parseInt(req.params.id)
         },
@@ -11,5 +11,6 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/se
             javaRemote: true,
             bedrockRemote: true
         }
-    }).then(res.json).catch(_err => res.status(404).end)
+    }).then(result => res.json(result))
+        .catch(_err => res.status(404).end)
 })

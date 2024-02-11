@@ -48,6 +48,6 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
             applyingPolicy: server.applyingPolicy
         }))).then(result => result.sort(
             (a, b) => body.indexOf(a.id) - body.indexOf(b.id) )
-        ).then(res.json)
+        ).then(body => res.json(body))
     }
 )
