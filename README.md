@@ -60,6 +60,7 @@ npx prisma db push
 
 运行命令
 ```shell
-node src/app.js
+tsc
+node out\app.js
 ```
-以开启后端。
+以编译和开启后端。

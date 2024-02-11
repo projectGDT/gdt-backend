@@ -7,7 +7,7 @@ node_modules
 *.secret
 
 # Compiled js files
-*.js
+out
 
 # Data outside the database
 data
