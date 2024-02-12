@@ -22,7 +22,3 @@ export async function verifyResponse(cfTurnstileResponse: string) {
     // .catch() as an "emergency brake" in case that the service is unavailable
     // FUCK YOU GFW
 }
-
-export function trueOrReject(promise: Promise<boolean>) {
-    return promise.then(result => result ? true : Promise.reject())
-}

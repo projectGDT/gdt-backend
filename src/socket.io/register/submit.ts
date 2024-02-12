@@ -1,12 +1,13 @@
-import { PrismaClient } from "@prisma/client";
-import { digest } from "../../utils/digest";
-import { qidExists } from "../../http/register/check-qid";
-import { usernameExists } from "../../http/register/check-username";
-import { randomUUID } from "node:crypto";
+import {PrismaClient} from "@prisma/client";
+import {digest} from "../../utils/digest";
+import {usernameExists} from "../../utils/register-utils";
+import {randomUUID} from "node:crypto";
 import {validator} from "@exodus/schemasafe";
 import {Server} from "socket.io";
 import {EventEmitter} from "node:events";
-import {trueOrReject, verifyResponse} from "../../utils/captcha-verify";
+import {verifyResponse} from "../../utils/captcha-verify";
+import {qidExists} from "../../utils/register-utils";
+import {trueOrReject} from "../../utils/true-or-reject";
 
 const validityPeriod = 10 * 60 * 1000; // 10 minutes
 const emailAddr = "rc@gdt.pub";
@@ -24,7 +25,7 @@ async function invitationCodeNullOrExists(code: any, prisma: PrismaClient) {
 const submitValidator = validator({
     type: "object",
     properties: {
-        qid: {type: "integer", minimum: 10001, maximum: 4294967295},
+        qid: {type: "string", pattern: "^[1-9][0-9]{4,9}$"},
         username: {type: "string", pattern: "^[a-zA-Z][a-zA-Z0-9_]{2,15}$"},
         password: {type: "string", pattern: "^(?=.*[a-zA-Z])(?=.*\\d).{8,}$"},
         invitationCode: {type: "string"},
@@ -45,9 +46,11 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
         }
 
         const {qid, username, password, invitationCode, ["cf-turnstile-response"]: cfTurnstileResponse} = payload
+        const qidInNumber = parseInt(qid)
+
         Promise.all([
             verifyResponse(cfTurnstileResponse),
-            qidExists(qid, prisma).then(res => !res), // true means qid exists -> fail
+            qidExists(qidInNumber, prisma).then(res => !res), // true means qid exists -> fail
             usernameExists(username, prisma).then(res => !res),
             invitationCodeNullOrExists(invitationCode, prisma)
         ].map(trueOrReject)).then(_res => {
@@ -64,16 +67,14 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
                 if (success) {
                     prisma.player.create({
                         data: {
-                            qid: qid,
+                            qid: qidInNumber,
                             username: username,
                             pwDigested: digest(password)
                         }
                     })
                     socket.emit("registered")
                 } else {
-                    socket.emit("error", {
-                        reason: "timeout"
-                    })
+                    socket.emit("timeout")
                 }
                 socket.disconnect()
             })
@@ -81,9 +82,7 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
             // handle expiration
             setTimeout(() => preRegistries.emit(eventName, false), validityPeriod);
         }).catch(_err => {
-            socket.emit("error", {
-                reason: "invalid-payload"
-            })
+            socket.emit("invalid-payload")
             socket.disconnect()
         })
     })

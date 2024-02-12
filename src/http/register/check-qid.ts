@@ -1,13 +1,8 @@
 import {PrismaClient} from "@prisma/client";
 import {Express} from "express";
+import {qidExists} from "../../utils/register-utils";
 
-export const qidRegex = /^[1-9][0-9]{4,9}$/
-
-export async function qidExists(qid: number, prisma: PrismaClient) {
-    return prisma.player.findUnique({
-        where: {qid}
-    }).then(result => result != null)
-}
+const qidRegex = /^[1-9][0-9]{4,9}$/
 
 module.exports = (app: Express, prisma: PrismaClient) => app.get("/register/check-qid/:qid", async (req, res) => {
     if (!req.params.qid.match(qidRegex)) {
@@ -15,6 +10,5 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/register/chec
         return
     }
 
-    qidExists(parseInt(req.params.qid), prisma)
-        .then(exists => res.json({exists}))
+    qidExists(parseInt(req.params.qid), prisma).then(exists => res.json({exists}))
 })

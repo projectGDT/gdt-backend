@@ -1,10 +1,11 @@
 import {Express} from "express"
 import {matches} from "../utils/digest"
 import {PrismaClient} from "@prisma/client"
-const jwt = require("jsonwebtoken")
+import jwt from "jsonwebtoken"
 import {jwtSecret} from "../app"
 import {jsonValidate} from "../utils/json-schema-middleware";
-import {trueOrReject, verifyResponse} from "../utils/captcha-verify";
+import {verifyResponse} from "../utils/captcha-verify";
+import {trueOrReject} from "../utils/true-or-reject";
 const qidRegex = /^[1-9][0-9]{4,9}$/
 
 module.exports = (app: Express, prisma: PrismaClient) => app.post(
