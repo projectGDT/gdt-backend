@@ -31,6 +31,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
             id: server.id,
             name: server.name,
             logoLink: server.logoLink,
+            coverLink: server.coverLink,
             ...includeRemote ? {
                 ...server.javaRemote ? {
                     javaRemote: {
