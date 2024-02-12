@@ -1,3 +1,6 @@
+export const appRoot = `${__dirname}/..`
+export const dataRoot = `${appRoot}/data`
+
 import {createServer} from "node:http";
 import {Server} from "socket.io";
 import express from "express";
@@ -24,9 +27,6 @@ export const jwtSecret = randomBytes(256)
 import {GDTEventEmitter} from "./event-base"
 import {useAuthMiddleware} from "./utils/auth-middleware";
 export const emitter = new GDTEventEmitter()
-
-export const appRoot = `${__dirname}/..`
-export const dataRoot = `${appRoot}/data`
 
 app.use(cors({
     origin: "http://localhost:3000", // for tests
