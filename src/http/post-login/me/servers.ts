@@ -46,7 +46,5 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/me
                 }))(server),
             isOperator
         }))
-    ).then(body => {
-        res.json(body)
-    })
+    ).then(body => res.json(body))
 })

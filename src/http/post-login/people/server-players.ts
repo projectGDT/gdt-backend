@@ -34,9 +34,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pe
         }
     }).then(
         result => result.map(
-            ({player, isOperator}) => ({...player, isOperator})
-        ).map(
-            ({id, profiles, isOperator}) => ({
+            ({player: {id, profiles}, isOperator})=> ({
                 id,
                 profiles: profiles.filter(
                     entry => uniqueIdProviders.includes(entry.uniqueIdProvider)

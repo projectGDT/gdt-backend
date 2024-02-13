@@ -30,8 +30,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pe
                 }
             ]
         }
-    }).then(result => result.map(entry => ({
-        id: entry.id,
-        name: entry.name
-    }))).then(body => res.json(body))
+    }).then(result => result.map(
+        ({id, name}) => ({id, name})
+    )).then(body => res.json(body))
 })
