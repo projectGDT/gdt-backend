@@ -33,15 +33,16 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/pe
             }
         }
     }).then(
-        result => result.map(entry => entry.player)
-    ).then(
-        result => {
-            result.forEach(
-                entry => entry.profiles = entry.profiles.filter(
+        result => result.map(
+            ({player, isOperator}) => ({...player, isOperator})
+        ).map(
+            ({id, profiles, isOperator}) => ({
+                id,
+                profiles: profiles.filter(
                     entry => uniqueIdProviders.includes(entry.uniqueIdProvider)
-                )
-            )
-            return result
-        }
+                ),
+                isOperator
+            })
+        )
     ).then(body => res.json(body))
 })
