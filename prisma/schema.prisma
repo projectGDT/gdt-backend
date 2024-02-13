@@ -156,21 +156,6 @@ enum SessionState {
   FINISHED // After the player joins the QQ group
 }
 
-model PreRegisteredPlayer {
-  passkey String @id
-  // a UUID
-
-  qid Int
-
-  username String @unique
-
-  pwDigested Bytes
-
-  expiresAt Int
-
-  invitationCode String
-}
-
 model InvitationCode {
   serverId Int
 
