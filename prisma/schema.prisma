@@ -110,8 +110,8 @@ model JavaRemote {
 
   uniqueIdProvider Int
 
-  modpackInfo String?
-  // consists of two parts, ${id or slug}/${versionId}
+  modpackVersionId String?
+  // get version dependencies from https://api.modrinth.com/v2/version/${id}
 }
 
 model BedrockRemote {
