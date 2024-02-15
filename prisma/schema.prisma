@@ -102,11 +102,7 @@ model JavaRemote {
   coreVersion String
 
   compatibleVersions Json
-  // an array, whose items are strings and two-item arrays.
-  // 1) string: a single version.
-  // 2) array: a range of versions (min and max, inclusive).
-  // example:
-  // ["1.19", "1.20", ["1.20.2", "1.20.4"]]
+  // an array whose items are strings
 
   uniqueIdProvider Int
 
@@ -124,7 +120,8 @@ model BedrockRemote {
 
   coreVersion String
 
-  compatibleVersions String
+  compatibleVersions Json
+  // an array whose items are strings
 
   // the uniqueIdProvier of BedrockRemote is fixed to -3 (Xbox Live).
 
