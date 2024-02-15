@@ -36,7 +36,7 @@ model Server {
 
   coverLink String
 
-  introduction String
+  introduction String @db.Text
 
   owner Player @relation("owning", fields: [ownerId], references: [id], onDelete: NoAction)
   ownerId Int
