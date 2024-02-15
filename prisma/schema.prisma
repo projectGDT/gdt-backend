@@ -163,5 +163,16 @@ model InvitationCode {
 
   expiresAt Int
 
-  reuseableTimes Int // infinite times: -1
+  reuseableTimes Int
+  // infinite times: -1
+}
+
+model ServerForm {
+  uuid String @id
+
+  serverId Int
+
+  body Json
+
+  isLatest Boolean
 }
