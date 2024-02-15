@@ -1,6 +1,6 @@
 <!-- common contents -->
 
-<div align="center">
+<div style="text-align: center">
     <img width="160" src="logo.svg" alt="logo"><br/>
     projectGDT - for a more connected Minecraft world!<br/>
     QQ Group:
@@ -31,9 +31,8 @@ projectGDT 的子项目之一，也是最为基础的子项目。
 
 ### 生成 Prisma Client
 
-运行以下命令以生成 Prisma Client:
+运行以下命令以生成 Prisma Client，并在数据库中生成结构:
 ```shell
-npx prisma generate
 npx prisma db push
 ```
 
