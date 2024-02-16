@@ -46,7 +46,7 @@ PBKDF2_SALT="{3}"
 
 - 将从 Cloudflare Turnstile 中获取的 `site secret` 填入 `{1}` 处。
 - 其余属性请自行生成，务必保密。
-- 请妥善保管 `PBKDF2_SALT`一旦丢失，则用户无法正常登录。
+- 请妥善保管 `PBKDF2_SALT`。一旦丢失，则用户无法正常登录。
 
 ### Cloudflare Email Worker 部署
 
