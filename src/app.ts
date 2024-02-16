@@ -6,12 +6,14 @@ const app = express() // add socket.io support
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:3000", // for tests
+        origin: process.env.FRONTEND_ORIGIN, // for tests
         methods: ["GET", "POST"],
         credentials: true
     }
 });
-const port = 14590 // for tests
+
+console.log(process.env.PORT)
+const port = parseInt(process.env.PORT ?? "14590")
 
 import cors from "cors";
 
@@ -26,7 +28,7 @@ import {useAuthMiddleware} from "./utils/auth-middleware";
 export const emitter = new GDTEventEmitter()
 
 app.use(cors({
-    origin: "http://localhost:3000", // for tests
+    origin: process.env.FRONTEND_ORIGIN, // for tests
     credentials: true
 }))
 
@@ -55,6 +57,6 @@ require("./http/post-login/me/discover/query")(app, prisma)
 require("./http/post-login/people/server-players")(app, prisma)
 require("./http/post-login/people/shared-servers")(app, prisma)
 
-httpServer.listen(port, () => {
+httpServer.listen(port, process.env.IP ?? "0.0.0.0", () => {
     console.log(`Start Listening on port ${port}`)
 })

@@ -61,3 +61,34 @@ PBKDF2_SALT="{3}"
 npm dev
 ```
 以编译和开启后端。
+
+## 生产环境部署
+
+首先，按照“开发环境调试”中的说明进行环境配置。
+
+### 网络参数配置
+
+在 `.env` 文件中添加以下三行:
+```
+IP="{1}"
+PORT="{2}"
+FRONTEND_ORIGIN="{3}"
+```
+
+- `IP` 指服务将要绑定的网卡 IP。如果不清楚此项，请留空。默认值 `0.0.0.0`。
+- `PORT` 是服务监听的端口。默认值 `14590`。
+- `FRONTEND_ORIGIN` 是前端服务的地址，必须提供，格式为 `[http|https]://[IP/domain]`。最后无需加斜杠 `/`。
+
+### ...在一切完成后
+
+运行
+```shell
+npm build
+```
+构建后的文件位于 `dist` 目录内。运行
+```shell
+node --env-file [env-file-path] index.js
+```
+来启动后端。其中 `[env-file-path]` 指 `.env` 文件的路径。
+
+**一定要将 `--env-file [env-file-path]` 参数置于 `index.js` 之前！**
