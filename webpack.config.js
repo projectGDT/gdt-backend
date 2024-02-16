@@ -18,6 +18,10 @@ const config = {
                     from: "./node_modules/.prisma/client/query_engine-*node",
                     to: path.resolve(__dirname, 'dist')
                 },
+                {
+                    from: "./.env",
+                    to: path.resolve(__dirname, 'dist')
+                },
             ],
         })
     ],

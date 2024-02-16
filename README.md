@@ -90,8 +90,8 @@ npm build
 ```
 构建后的文件位于 `dist` 目录内。运行
 ```shell
-node --env-file [env-file-path] index.js
+node --env-file .env index.js
 ```
-来启动后端。其中 `[env-file-path]` 指 `.env` 文件的路径。
+来启动后端。
 
-**一定要将 `--env-file [env-file-path]` 参数置于 `index.js` 之前！**
+**一定要将 `--env-file .env` 参数置于 `index.js` 之前！**
