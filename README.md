@@ -27,7 +27,9 @@ projectGDT 的子项目之一，也是最为基础的子项目。
 
 你可能还需要更改 `/prisma/schema.prisma` 中的 `db.provider`。
 
-此项目使用的是 MySQL 8.1。其他数据库的兼容性未经测试。
+此项目使用的是 MySQL 8.1。
+
+此项目用到了 Json 类型。根据 prisma.io 的文档，目前只有 MySQL 5.7 以上版本和 PostgreSQL 兼容此类型。
 
 ### 生成 Prisma Client
 
@@ -37,6 +39,7 @@ npx prisma db push
 ```
 
 ### 密钥配置
+
 在 `.env` 文件中添加以下三行:
 ```
 CAPTCHA_SITE_SECRET="{1}"
