@@ -8,6 +8,3 @@ node_modules
 
 # Compiled js files
 out
-
-# Data outside the database
-data

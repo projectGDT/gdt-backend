@@ -1,12 +1,8 @@
-import * as fs from "fs";
-import {dataRoot} from "../app";
-
-const captchaSiteSecret = fs.readFileSync(`${dataRoot}/captcha-site-secret.secret`).toString()
 const siteVerifyUrl = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 
 export async function verifyResponse(cfTurnstileResponse: string) {
     const siteVerifyData = new FormData()
-    siteVerifyData.append("secret", captchaSiteSecret)
+    siteVerifyData.append("secret", process.env.CAPTCHA_SITE_SECRET as string)
     siteVerifyData.append("response", cfTurnstileResponse)
     try {
         const response = await fetch(siteVerifyUrl, {
