@@ -11,8 +11,6 @@ const io = new Server(httpServer, {
         credentials: true
     }
 });
-
-console.log(process.env.PORT)
 const port = parseInt(process.env.PORT ?? "14590")
 
 import cors from "cors";
