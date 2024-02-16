@@ -1,6 +1,3 @@
-export const appRoot = `${__dirname}/..`
-export const dataRoot = `${appRoot}/data`
-
 import {createServer} from "node:http";
 import {Server} from "socket.io";
 import express from "express";

@@ -11,7 +11,7 @@
   "author": "Johnny Walker",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.8.1",
+    "@prisma/client": "^5.9.1",
     "@types/node": "^20.11.0",
     "auth-bearer-parser": "^1.0.1",
     "express-jwt": "^8.4.1",
@@ -32,7 +32,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "prisma": "^5.8.1",
+    "prisma": "^5.9.1",
     "socket.io": "^4.7.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
