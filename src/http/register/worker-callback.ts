@@ -1,6 +1,7 @@
 import {Express} from "express";
 import {jsonValidate} from "../../utils/json-schema-middleware";
-import {preRegistries} from "../../socket.io/register/submit";
+
+import {preRegistries} from "../../event-base";
 
 module.exports = (app: Express) => app.post(
     "/register/worker-callback",

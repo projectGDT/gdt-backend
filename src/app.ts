@@ -1,6 +1,11 @@
 import {createServer} from "node:http";
 import {Server} from "socket.io";
 import express from "express";
+import cors from "cors";
+
+import {PrismaClient} from "@prisma/client"
+import {randomBytes} from "node:crypto"
+import {useAuthMiddleware} from "./utils/auth-middleware";
 
 const app = express() // add socket.io support
 const httpServer = createServer(app)
@@ -12,18 +17,9 @@ const io = new Server(httpServer, {
     }
 });
 const port = 14590 // for tests
-
-import cors from "cors";
-
-import {PrismaClient} from "@prisma/client"
 const prisma = new PrismaClient()
 
-import {randomBytes} from "node:crypto"
 export const jwtSecret = randomBytes(256)
-
-import {GDTEventEmitter} from "./event-base"
-import {useAuthMiddleware} from "./utils/auth-middleware";
-export const emitter = new GDTEventEmitter()
 
 app.use(cors({
     origin: "http://localhost:3000", // for tests

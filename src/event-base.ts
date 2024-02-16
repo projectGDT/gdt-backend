@@ -23,3 +23,6 @@ export class GDTEventEmitter extends EventEmitter {
         return super.emit(event.typeId, event)
     }
 }
+
+export const preRegistries = new EventEmitter()
+export const emitter = new GDTEventEmitter()
