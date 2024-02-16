@@ -37,17 +37,16 @@ npx prisma db push
 ```
 
 ### 密钥配置
-
-在根目录下创建 `/data` 文件夹，创建如下文件：
+在 `.env` 文件中添加以下三行:
 ```
-/data/captcha-site-secret.secret
-/data/client-secret.secret
-/data/salt.secret
+CAPTCHA_SITE_SECRET="{1}"
+CLIENT_SECRET="{2}"
+PBKDF2_SALT="{3}"
 ```
 
-- 将从 Cloudflare Turnstile 中获取的 `site secret` 填入 `captcha-site-secret.secret`。
-- 其余文件的内容请自行生成，务必保密。
-- 请妥善保管 `salt.secret`，一旦丢失，则用户无法正常登录。
+- 将从 Cloudflare Turnstile 中获取的 `site secret` 填入 `{1}` 处。
+- 其余属性请自行生成，务必保密。
+- 请妥善保管 `PBKDF2_SALT`。一旦丢失，则用户无法正常登录。
 
 ### Cloudflare Email Worker 部署
 
@@ -59,7 +58,6 @@ npx prisma db push
 
 运行命令
 ```shell
-tsc
-node out\app.js
+npm dev
 ```
 以编译和开启后端。
