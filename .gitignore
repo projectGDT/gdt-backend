@@ -8,6 +8,7 @@ node_modules
 
 # Compiled js files
 out
+dist
 
 # Data outside the database
 data
