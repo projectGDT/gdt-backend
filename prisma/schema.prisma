@@ -28,6 +28,9 @@ model Player {
 model Server {
   id Int @id @default(autoincrement())
 
+  tokenDigested Bytes
+  // server token, digested using PBKDF2, the same way as player password
+
   groupId Int
 
   name String
