@@ -4,7 +4,7 @@ export const formValidator = validator({
     type: "object",
     properties: {
         title: {type: "string", minLength: 1, maxLength: 30},
-        preface: {type: "string", minLength: 1, maxLength: 200},
+        preface: {type: "string", maxLength: 200},
         questions: {
             type: "array",
             items: {
@@ -13,8 +13,8 @@ export const formValidator = validator({
                     root: {
                         type: "object",
                         properties: {
-                            contents: {type: "string", minLength: 1, maxLength: 60},
-                            hint: {type: "string", minLength: 1, maxLength: 60}
+                            contents: {type: "string", minLength: 1, maxLength: 30},
+                            hint: {type: "string", maxLength: 90}
                         },
                         required: ["contents"],
                         additionalProperties: false

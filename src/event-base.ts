@@ -13,12 +13,16 @@ export class GDTEventEmitter extends EventEmitter {
         super()
     }
 
-    // on
+    // an alternative of on(eventName, listener)
+    // usage: listen<EventType>(event => ...)
+    // the compiler will infer the type of "event" param
     listen<T extends GDTEvent>(event: T, listener: (event: T) => void) {
         return super.on(event.typeId, listener)
     }
 
-    // emit
+    // an alternative of emit(eventName, ...args)
+    // usage: fire(event)
+    // the compiler will infer the type of "event" param
     fire<T extends GDTEvent>(event: T) {
         return super.emit(event.typeId, event)
     }
