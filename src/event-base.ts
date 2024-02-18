@@ -1,11 +1,7 @@
 import {EventEmitter} from "node:events";
 
 export abstract class GDTEvent {
-    readonly typeId: string
-
-    protected constructor(typeId: string) {
-        this.typeId = typeId
-    }
+    static typeId: string
 }
 
 export class GDTEventEmitter extends EventEmitter {
@@ -14,17 +10,19 @@ export class GDTEventEmitter extends EventEmitter {
     }
 
     // an alternative of on(eventName, listener)
-    // usage: listen<EventType>(event => ...)
+    // usage: listen<EventType>(EventType, (event, timestamp) => ...)
     // the compiler will infer the type of "event" param
-    listen<T extends GDTEvent>(event: T, listener: (event: T) => void) {
-        return super.on(event.typeId, listener)
+    // There's no way to determine whether T and "type" is the same.
+    // So it all depends on the caller.
+    listen<T extends GDTEvent>(type: typeof GDTEvent, listener: (event: T, timestamp: number) => void) {
+        return super.on(type.typeId, listener)
     }
 
     // an alternative of emit(eventName, ...args)
-    // usage: fire(event)
-    // the compiler will infer the type of "event" param
-    fire<T extends GDTEvent>(event: T) {
-        return super.emit(event.typeId, event)
+    // usage: fire(EventType, event)
+    // the compiler will infer the type of "event" param.
+    fire(type: typeof GDTEvent, event: GDTEvent) {
+        return super.emit(type.typeId, event, Date.now())
     }
 }
 
