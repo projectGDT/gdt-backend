@@ -3,6 +3,8 @@ import {EventEmitter} from "node:events";
 export abstract class GDTEvent {
     static typeId: string
     timestamp: number = 0
+    // must be formally compatible with extended class constructors
+    constructor(...args: any[]) {}
 }
 
 export class GDTEventEmitter extends EventEmitter {
@@ -23,7 +25,8 @@ export class GDTEventEmitter extends EventEmitter {
     // usage: fire(EventType, event)
     // the compiler will infer the type of "event" param.
     fire(type: typeof GDTEvent, event: GDTEvent) {
-        event.timestamp = Date.now()
+        // set timestamp when initializing a new event
+        // event.timestamp = Date.now()
         return super.emit(type.typeId, event)
     }
 }

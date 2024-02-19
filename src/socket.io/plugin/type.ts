@@ -8,15 +8,15 @@ export type PlayerProfile = {
 
 export type PlayerLoginEventData = {
     profile: PlayerProfile,
-    timeStamp: number
+    timestamp: number
 }
 
 export type PlayerLogoutEventData = {
     profile: PlayerProfile,
-    timeStamp: number
+    timestamp: number
 }
 
 export type KickResponseData = {
     success: boolean,
-    timeStamp: number
+    timestamp: number
 }
