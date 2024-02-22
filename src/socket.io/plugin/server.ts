@@ -3,10 +3,12 @@
 import { PrismaClient } from "@prisma/client";
 import { Server } from "socket.io";
 import { matches } from "../../utils/digest";
+import { emitter } from "../../event-base";
 import {
-    PlayerLoginEvent, PlayerLoginEventEmitter,
-    PlayerLogoutEvent, PlayerLogoutEventEmitter,
-    KickResponseEvent, KickResponseEventEmitter
+    PlayerLoginEvent,
+    PlayerLogoutEvent,
+    KickPlayerEvent,
+    KickResponseEvent,
 } from "./plugin-event";
 
 module.exports = (io: Server, prisma: PrismaClient) => io.of("/plugin/server").use(async (socket, next) => {
@@ -29,22 +31,22 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/plugin/server").u
     }
     
     // listening basic events from MC server plugins
-    socket.on("player-login", json => {
-        const event = new PlayerLoginEvent();
-        event.setData(server, json);
-        new PlayerLoginEventEmitter().fire(event);
-    });
-
-    socket.on("player-logout", json => {
-        const event = new PlayerLogoutEvent();
-        event.setData(server, json);
-        new PlayerLogoutEventEmitter().fire(event);
-    });
+    socket.on("player-login", json => emitter.fire(PlayerLoginEvent, new PlayerLoginEvent(server, json)));
+    socket.on("player-logout", json => emitter.fire(PlayerLogoutEvent, new PlayerLogoutEvent(server, json)));
 
     // listening server response after emitting kick-online-player
-    socket.on("kick-online-player-response", json => {
-        const event = new KickResponseEvent();
-        event.setData(server, json);
-        new KickResponseEventEmitter().fire(event);
+    socket.on("kick-online-player-response", json => emitter.fire(KickResponseEvent, new KickResponseEvent(server, json)));
+
+    // after receiving kick-online-player request from frontend
+    emitter.listen(KickPlayerEvent, (event: KickPlayerEvent) => {
+        // don't emit on wrong server
+        if (event.serverId !== server.id) {
+            return;
+        }
+        socket.emit("kick-online-player", {
+            profile: event.playerProfile,
+            timestamp: event.timestamp,
+        });
     });
+    next();
 });

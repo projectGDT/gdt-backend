@@ -5,67 +5,53 @@ import { GDTEvent, GDTEventEmitter } from "../../event-base";
 import * as type from "./type"
 
 export class PlayerLoginEvent extends GDTEvent {
-    server: Server | undefined;
-    playerProfile: type.PlayerProfile | undefined;
-    timeStamp: number | undefined;
+    static typeId = "player-login";
+    server: Server;
+    playerProfile: type.PlayerProfile;
 
-    constructor() {
-        super("player-login");
-    }
-
-    setData(server: Server, json: type.PlayerLoginEventData) {
+    constructor(server: Server, json: type.PlayerLoginEventData) {
+        super();
         this.server = server;
         this.playerProfile = json.profile;
-        this.timeStamp = json.timeStamp;
-    }
-}
-
-export class PlayerLoginEventEmitter extends GDTEventEmitter {
-    onPlayerLoginEvent(listener: (event: PlayerLoginEvent) => void) {
-        this.listen(new PlayerLoginEvent(), listener);
+        this.timestamp = json.timestamp;
     }
 }
 
 export class PlayerLogoutEvent extends GDTEvent {
-    server: Server | undefined;
-    playerProfile: type.PlayerProfile | undefined;
-    timeStamp: number | undefined;
+    static typeId = "player-logout";
+    server: Server;
+    playerProfile: type.PlayerProfile;
 
-    constructor() {
-        super("player-logout");
-    }
-
-    setData(server: Server, json: type.PlayerLogoutEventData) {
+    constructor(server: Server, json: type.PlayerLogoutEventData) {
+        super();
         this.server = server;
         this.playerProfile = json.profile;
-        this.timeStamp = json.timeStamp;
+        this.timestamp = json.timestamp;
     }
 }
 
-export class PlayerLogoutEventEmitter extends GDTEventEmitter {
-    onPlayerLogoutEvent(listener: (event: PlayerLogoutEvent) => void) {
-        this.listen(new PlayerLogoutEvent(), listener);
+export class KickPlayerEvent extends GDTEvent {
+    static typeId = "kick-online-player";
+    serverId: number;
+    playerProfile: type.PlayerProfile;
+
+    constructor(serverId: number, playerProfile: type.PlayerProfile) {
+        super();
+        this.serverId = serverId;
+        this.playerProfile = playerProfile;
+        this.timestamp = Date.now();
     }
 }
 
 export class KickResponseEvent extends GDTEvent {
-    server: Server | undefined;
-    success: boolean | undefined;
-    timeStamp: number | undefined;
+    static typeId = "kick-online-player-response";
+    server: Server;
+    success: boolean;
 
-    constructor() {
-        super("kick-online-player-response");
-    }
-
-    setData(server: Server, json: type.KickResponseData) {
+    constructor(server: Server, json: type.KickResponseData) {
+        super();
         this.server = server;
         this.success = json.success;
-        this.timeStamp = json.timeStamp;
-    }
-}
-
-export class KickResponseEventEmitter extends GDTEventEmitter {
-    onKickResponseEvent(listener: (event: KickResponseEvent) => void) {
-        this.listen(new KickResponseEvent(), listener);
+        this.timestamp = json.timestamp;
     }
 }
