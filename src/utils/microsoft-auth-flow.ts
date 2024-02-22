@@ -37,7 +37,6 @@ export class MicrosoftAuthFlow {
         codeCallback: (userCode: string, verificationUri: string) => void | Promise<void>,
         errCallback: (err: any) => void,
         javaProfileCallBack: (uuid: string, playerName: string) => void | Promise<void>,
-        xboxProfileCallBack?: (xuid: string, xboxGamerTag: string) => void | Promise<void>,
         alivePeriodInSecond?: number
     ) {
         this.keyPair = crypto.generateKeyPairSync('ec', {
@@ -54,16 +53,13 @@ export class MicrosoftAuthFlow {
             this.jwk = result
             const deviceCodeInit = await this.doDeviceCodeAuth()
             codeCallback(deviceCodeInit.user_code, deviceCodeInit.verification_uri)
-
             const msaToken = await this.awaitAccessToken(deviceCodeInit.device_code, 5)
             const deviceToken = await this.getDeviceToken()
             const xstsTokenResp = await this.doSisuAuth(msaToken, deviceToken)
-            xboxProfileCallBack?.(xstsTokenResp.DisplayClaims.xui[0].xui, xstsTokenResp.DisplayClaims.xui[0].gtg)
-
             const mcaToken = await this.getMinecraftAccessToken(xstsTokenResp.Token,xstsTokenResp.DisplayClaims.xui[0].uhs)
             const profile = await this.getProfile(mcaToken)
             javaProfileCallBack(addMinus(profile.id), profile.name)
-        }).catch(err => errCallback(err))
+        }).catch(errCallback)
     }
 
     stopPending() {
@@ -177,7 +173,7 @@ export class MicrosoftAuthFlow {
 
     private async getProfile(minecraftAccessToken: string) {
         return await fetch(Endpoints.MinecraftServicesProfile, {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Authorization": `Bearer ${minecraftAccessToken}`,
                 "Accept": "application/json"
