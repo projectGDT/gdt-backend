@@ -16,7 +16,7 @@
     "auth-bearer-parser": "^1.0.1",
     "express-jwt": "^8.4.1",
     "express-ws": "^5.0.2",
-    "prismarine-auth": "^2.4.0",
+    "jose": "^5.2.2",
     "random-js": "^2.1.0",
     "smart-buffer": "^4.2.0"
   },
