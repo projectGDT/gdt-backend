@@ -35,7 +35,7 @@ const submitValidator = validator({
 module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit").on("connection", socket => {
     socket.once("payload", payload => {
         if (!submitValidator(payload)) {
-            socket.emit("payload_error")
+            socket.emit("invalid-payload")
             socket.disconnect()
             return
         }
@@ -69,7 +69,7 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
                     })
                     socket.emit("registered")
                 } else {
-                    socket.emit("timeout_error")
+                    socket.emit("timeout")
                 }
                 socket.disconnect()
             })
@@ -77,7 +77,7 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
             // handle expiration
             setTimeout(() => preRegistries.emit(eventName, false), validityPeriod);
         }).catch(_err => {
-            socket.emit("payload_error")
+            socket.emit("invalid-payload")
             socket.disconnect()
         })
     })
