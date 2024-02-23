@@ -1,10 +1,10 @@
-import { validator } from "@exodus/schemasafe"
+import {Schema, validator} from "@exodus/schemasafe"
 
-export const formValidator = validator({
+export const formSchema: Schema = {
     type: "object",
     properties: {
         title: {type: "string", minLength: 1, maxLength: 30},
-        preface: {type: "string", maxLength: 200},
+        preface: {type: "string", maxLength: 300},
         questions: {
             type: "array",
             items: {
@@ -13,8 +13,8 @@ export const formValidator = validator({
                     root: {
                         type: "object",
                         properties: {
-                            contents: {type: "string", minLength: 1, maxLength: 30},
-                            hint: {type: "string", maxLength: 90}
+                            contents: {type: "string", minLength: 1, maxLength: 60},
+                            hint: {type: "string", maxLength: 300}
                         },
                         required: ["contents"],
                         additionalProperties: false
@@ -74,7 +74,7 @@ export const formValidator = validator({
     },
     required: ["title", "preface", "questions"],
     additionalProperties: false
-})
+}
 
 export function generateAnswerSchema(form: {
     title: string,

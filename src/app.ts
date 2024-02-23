@@ -68,6 +68,9 @@ require("./http/post-login/me/discover/query")(app, prisma)
 require("./http/post-login/people/server-players")(app, prisma)
 require("./http/post-login/people/shared-servers")(app, prisma)
 
+require("./http/post-login/access/submit")(app, prisma)
+require("./http/post-login/access/fetch")(app, prisma)
+
 httpServer.listen(port, () => {
     console.log(`Start Listening on port ${port}`)
 })

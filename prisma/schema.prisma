@@ -179,3 +179,21 @@ model ServerForm {
 
   isLatest Boolean
 }
+
+model AccessApplyPayload {
+  id Int @id @default(autoincrement())
+
+  submittedBy Int
+
+  payload Json
+
+  createdAt DateTime @default(now())
+
+  state AccessApplySessionState
+}
+
+enum AccessApplySessionState {
+  REVIEWING
+  ACCEPTED
+  REJECTED
+}
