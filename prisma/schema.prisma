@@ -23,6 +23,8 @@ model Player {
   ownedServers Server[] @relation("owning")
 
   involvedServers PlayerInServer[] @relation("involving")
+
+  isSiteAdmin Boolean @default(false)
 }
 
 model Server {
@@ -132,8 +134,8 @@ model BedrockRemote {
 }
 
 model ApplyingSession {
-  id Int @id
-  // ApplyingSessions are deferredly loaded, so no @relation annotations are used.
+  id Int @id @default(autoincrement())
+  // ApplyingSessions are lazily loaded, so no @relation annotations are used.
 
   playerId Int
 
@@ -141,7 +143,7 @@ model ApplyingSession {
 
   payload Json
 
-  submittedAt DateTime
+  submittedAt DateTime @default(now())
 
   state SessionState
 
@@ -164,7 +166,10 @@ model InvitationCode {
 
   issuedBy Int
 
-  expiresAt Int
+  issuedAt DateTime @default(now())
+
+  lifetime Int
+  // given in seconds; permanent: -1
 
   reuseableTimes Int
   // infinite times: -1
