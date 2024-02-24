@@ -1,4 +1,4 @@
-import {Schema, validator} from "@exodus/schemasafe"
+import {Schema} from "@exodus/schemasafe"
 
 export const formSchema: Schema = {
     type: "object",
@@ -109,7 +109,7 @@ export function generateAnswerSchema(form: {
                     additionalProperties: boolean
                 } = {
                     type: "object",
-                    properties: [],
+                    properties: {},
                     required: [],
                     additionalProperties: false
                 }
