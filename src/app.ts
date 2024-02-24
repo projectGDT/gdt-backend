@@ -71,6 +71,9 @@ require("./http/post-login/people/shared-servers")(app, prisma)
 require("./http/post-login/access/submit")(app, prisma)
 require("./http/post-login/access/fetch")(app, prisma)
 
+require("./http/post-login/apply/get-form/by-id")(app, prisma)
+require("./http/post-login/apply/get-form/by-server")(app, prisma)
+
 httpServer.listen(port, () => {
     console.log(`Start Listening on port ${port}`)
 })
