@@ -194,11 +194,12 @@ model AccessApplyPayload {
 
   createdAt DateTime @default(now())
 
-  state AccessApplySessionState
+  state AccessApplySessionState @default(REVIEWING)
 }
 
 enum AccessApplySessionState {
   REVIEWING
   ACCEPTED
   REJECTED
+  ACTIVATED // after all modules are enabled on the server
 }
