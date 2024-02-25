@@ -44,7 +44,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
         }).then(
             _result => res.json(playerData)
         ).catch(_err => {
-            res.status(500).json({
+            res.status(400).json({
                 reason: "already-exists"
             })
         })
