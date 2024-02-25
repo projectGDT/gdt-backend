@@ -48,7 +48,7 @@ app.use(express.json())
 require("./http/register/check-qid")(app, prisma)
 require("./http/register/check-username")(app, prisma)
 require("./socket.io/register/submit")(io, prisma)
-require("./http/register/worker-callback")(app)
+require("./utils/email-verify")()
 
 require("./http/login")(app, prisma)
 

@@ -51,11 +51,23 @@ PBKDF2_SALT="{3}"
 - 其余属性请自行生成，务必保密。
 - 请妥善保管 `PBKDF2_SALT`。一旦丢失，则用户无法正常登录。
 
-### Cloudflare Email Worker 部署
+### 邮箱配置
+
+projectGDT的收信邮箱使用 IMAPS 协议，在 `.env` 文件中添加以下四行:
+```
+EMAIL_ADDR="{1}
+EMAIL_HOST="{2}"
+EMAIL_USERNAME="{3}"
+EMAIL_PASSWORD="{4}"
+```
+
+分别表示收信邮箱地址，收信服务器主机，账户名以及密码 / 授权码。
+
+<!-- ### Cloudflare Email Worker 部署
 
 请参照 [此处](https://github.com/projectGDT/gdt-cloudflare-worker) 的说明以及 [Cloudflare 文档](https://developers.cloudflare.com/workers/) 完成部署。
 
-部署过程中需要更改 `/src/register/submit.ts` 中的 `emailAddr` 常量。
+部署过程中需要更改 `/src/register/submit.ts` 中的 `emailAddr` 常量。 -->
 
 ### ...在一切完成后
 
