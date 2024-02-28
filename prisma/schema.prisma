@@ -143,12 +143,19 @@ model ApplyingSession {
 
   payload Json
 
-  submittedAt DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  state SessionState
+  state SessionState @default(REVIEWING)
+
+  profileActivated Boolean @default(false)
+  // whether the player has binded the corresponding profile
+
+  groupActivated Boolean @default(false)
+  // whether the player has entered the group
 
   handledBy Int @default(-1)
   // Initially the session is unhandled
+  // or joined with an invitation code => handled by "nobody"
 }
 
 enum SessionState {
@@ -195,6 +202,12 @@ model AccessApplyPayload {
   createdAt DateTime @default(now())
 
   state AccessApplySessionState @default(REVIEWING)
+
+  botActivated Boolean @default(false)
+  // whether the bot is invited into the corresponding group
+
+  pluginActivated Boolean @default(false)
+  // whether the plugin is correctly installed and has performed the first handshake
 }
 
 enum AccessApplySessionState {
