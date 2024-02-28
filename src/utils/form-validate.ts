@@ -67,11 +67,11 @@ export const formSchema: Schema = {
                         ]
                     }
                 },
-                maxItems: 20,
-                minItems: 1,
                 required: ["content", "required", "branches"],
                 additionalProperties: false
-            }
+            },
+            maxItems: 20,
+            minItems: 1,
         }
     },
     required: ["title", "preface", "questions"],
