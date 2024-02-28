@@ -19,15 +19,15 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
     async (req: Request, res) => {
         const {uniqueIdProvider} = req.body
 
-        prisma.profile.deleteMany /* why does using delete result in a compile error? */ ({
+        prisma.profile.delete({
             where: {
-                playerId: req.auth!.id,
-                uniqueIdProvider: uniqueIdProvider
+                playerId_uniqueIdProvider: {
+                    playerId: req.auth!.id,
+                    uniqueIdProvider: uniqueIdProvider
+                }
             }
-        }).then(result => {
-            if (result.count === 0)
-                res.status(404).end()
-            else res.status(200).json({}).end()
         })
+            .then(_result => res.status(204).end())
+            .catch(_err => res.status(404).end())
     }
 )
