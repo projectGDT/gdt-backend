@@ -29,7 +29,7 @@ const scope = "service::user.auth.xboxlive.com::MBI_SSL"
 
 export class MicrosoftAuthFlow {
     private keyPair: crypto.KeyPairKeyObjectResult
-    private jwk: (JWK & { alg: string; use: string; }) | undefined
+    private jwk?: (JWK & { alg: string; use: string; })
     private readonly alivePeriod: number
     private pending: boolean = true
 
