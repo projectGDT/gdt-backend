@@ -11,6 +11,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
             type: "number"
         },
         uniqueItems: true,
+        minItems: 1,
         maxItems: 10
     }),
     async (req: Request, res) => {

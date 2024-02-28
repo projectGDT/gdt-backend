@@ -28,7 +28,8 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/a
                         type: "string",
                         maxLength: 3000
                     }
-                }
+                },
+                additionalProperties: false
             },
             remote: {
                 type: "object",
@@ -53,7 +54,8 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/a
                             coreVersion: {type: "string", pattern: "^1\\.[0-9]{1,2}\\.[0-9]{1,2}$"},
                             auth: {type: "string", enum: ["microsoft", "littleSkin", "offline"]},
                             modpackVersionId: {type: "string", pattern: "^[0-9a-zA-Z]{8}$"}
-                        }
+                        },
+                        additionalProperties: false
                     },
                     bedrock: {
                         type: "object",
@@ -73,7 +75,8 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/a
                                 items: {type: "string", pattern: "^1\\.[0-9]{1,2}\\.[0-9]{1,3}$"}
                             },
                             coreVersion: {type: "string", pattern: "^1\\.[0-9]{1,2}\\.[0-9]{1,3}$"}
-                        }
+                        },
+                        additionalProperties: false
                     }
                 },
             },
@@ -83,8 +86,10 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/a
                 properties: {
                     policy: {type: "string", enum: ["allOpen", "byForm"]},
                     form: formSchema
-                }
-            }
+                },
+                additionalProperties: false
+            },
+            additionalProperties: false
         }
     }),
     (req: Request, res) => {
