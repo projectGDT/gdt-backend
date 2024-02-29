@@ -9,7 +9,7 @@ import {trueOrReject} from "../../utils/true-or-reject";
 import {preRegistries} from "../../event-base";
 
 const validityPeriod = 10 * 60 * 1000; // 10 minutes
-const emailAddr = "rc@gdt.pub";
+const emailAddr = process.env.EMAIL_ADDR as string;
 
 async function invitationCodeNullOrExists(code: any, prisma: PrismaClient) {
     return (!code) || await prisma.invitationCode.findUnique({
