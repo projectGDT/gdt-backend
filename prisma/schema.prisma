@@ -178,7 +178,7 @@ model InvitationCode {
   lifetime Int
   // given in seconds; permanent: -1
 
-  reuseableTimes Int
+  reusableTimes Int
   // infinite times: -1
 }
 
