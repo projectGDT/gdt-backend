@@ -1,29 +1,23 @@
 import {Express} from "express";
 import {PrismaClient} from "@prisma/client";
-import {Request} from "express-jwt";
 import {jsonValidate} from "../../../utils/json-schema-middleware";
+import {Request} from "express-jwt";
 
 module.exports = (app: Express, prisma: PrismaClient) => app.post(
-    "/post-login/profile/delete",
+    "/post-login/apply/leave",
     jsonValidate({
         type: "object",
         properties: {
-            uniqueIdProvider: {
-                type: "integer",
-                maximum: -1, // you cannot directly delete an offline profile
-                minimum: -3
-            }
+            id: {type: "integer"}
         },
-        required: ["uniqueIdProvider"]
+        required: ["id"]
     }),
     async (req: Request, res) => {
-        const {uniqueIdProvider} = req.body
-
-        prisma.profile.delete({
+        prisma.playerInServer.delete({
             where: {
-                playerId_uniqueIdProvider: {
+                playerId_serverId: {
                     playerId: req.auth!.id,
-                    uniqueIdProvider: uniqueIdProvider
+                    serverId: req.body.id
                 }
             }
         })
