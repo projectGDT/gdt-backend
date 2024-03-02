@@ -1,5 +1,5 @@
 import { preRegistries } from "../event-base";
-import { ImapFlow, MailboxObject } from "imapflow";
+import { ImapFlow } from "imapflow";
 
 const checkMailboxInterval = 10000;  // check for new verification emails every 10 seconds
 
@@ -32,11 +32,11 @@ const checkMailbox = async () => {
     }
 };
 
-const main = async () => {
+const moduleMain = async () => {
     await client.connect();
     setInterval(checkMailbox, checkMailboxInterval);
 };
 
 module.exports = () => {
-    main().catch(err => console.log(err));
+    moduleMain().catch(err => console.log(err));
 };
