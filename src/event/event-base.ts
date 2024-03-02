@@ -4,7 +4,7 @@ export abstract class GDTEvent {
     static typeId: string
     timestamp: number = 0
     // must be formally compatible with extended class constructors
-    constructor(...args: any[]) {}
+    protected constructor() {}
 }
 
 export class GDTEventEmitter extends EventEmitter {

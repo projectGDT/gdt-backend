@@ -6,10 +6,10 @@ import {validator} from "@exodus/schemasafe";
 import {Server} from "socket.io";
 import {verifyResponse} from "../../utils/captcha-verify";
 import {trueOrReject} from "../../utils/true-or-reject";
-import {preRegistries} from "../../event-base";
+import {preRegistries} from "../../event/event-base";
 
 const validityPeriod = 10 * 60 * 1000; // 10 minutes
-const emailAddr = process.env.EMAIL_ADDR as string;
+const emailAddr = process.env.EMAIL_ADDR!;
 
 async function invitationCodeNullOrExists(code: any, prisma: PrismaClient) {
     return (!code) || await prisma.invitationCode.findUnique({

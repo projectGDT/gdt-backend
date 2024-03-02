@@ -2,16 +2,16 @@
 
 import { PrismaClient } from "@prisma/client";
 import { Server } from "socket.io";
-import { matches } from "../../utils/digest";
-import { emitter } from "../../event-base";
+import { matches } from "../utils/digest";
+import { emitter } from "../event/event-base";
 import {
     PlayerLoginEvent,
     PlayerLogoutEvent,
     KickPlayerEvent,
     KickResponseEvent,
-} from "./plugin-event";
+} from "../event/plugin-event";
 
-module.exports = (io: Server, prisma: PrismaClient) => io.of("/plugin/server").use(async (socket, next) => {
+module.exports = (io: Server, prisma: PrismaClient) => io.of("/plugin").use(async (socket, next) => {
     // verify server id and token
     const auth = socket.handshake.auth;
     const server = await prisma.server.findUnique({

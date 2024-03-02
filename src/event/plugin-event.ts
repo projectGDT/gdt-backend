@@ -1,15 +1,32 @@
 // some basic events that plugin must emit
 
-import { Server } from "@prisma/client";
-import { GDTEvent, GDTEventEmitter } from "../../event-base";
-import * as type from "./type"
+import {Server} from "@prisma/client";
+import {GDTEvent} from "./event-base";
+
+export type PlayerProfile = {
+    uniqueIdProvider: number,
+    uniqueId: string,
+    cachedPlayerName: string
+}
+export type PlayerLoginEventData = {
+    profile: PlayerProfile,
+    timestamp: number
+}
+export type PlayerLogoutEventData = {
+    profile: PlayerProfile,
+    timestamp: number
+}
+export type KickResponseData = {
+    success: boolean,
+    timestamp: number
+}
 
 export class PlayerLoginEvent extends GDTEvent {
     static typeId = "player-login";
     server: Server;
-    playerProfile: type.PlayerProfile;
+    playerProfile: PlayerProfile;
 
-    constructor(server: Server, json: type.PlayerLoginEventData) {
+    constructor(server: Server, json: PlayerLoginEventData) {
         super();
         this.server = server;
         this.playerProfile = json.profile;
@@ -20,9 +37,9 @@ export class PlayerLoginEvent extends GDTEvent {
 export class PlayerLogoutEvent extends GDTEvent {
     static typeId = "player-logout";
     server: Server;
-    playerProfile: type.PlayerProfile;
+    playerProfile: PlayerProfile;
 
-    constructor(server: Server, json: type.PlayerLogoutEventData) {
+    constructor(server: Server, json: PlayerLogoutEventData) {
         super();
         this.server = server;
         this.playerProfile = json.profile;
@@ -33,9 +50,9 @@ export class PlayerLogoutEvent extends GDTEvent {
 export class KickPlayerEvent extends GDTEvent {
     static typeId = "kick-online-player";
     serverId: number;
-    playerProfile: type.PlayerProfile;
+    playerProfile: PlayerProfile;
 
-    constructor(serverId: number, playerProfile: type.PlayerProfile) {
+    constructor(serverId: number, playerProfile: PlayerProfile) {
         super();
         this.serverId = serverId;
         this.playerProfile = playerProfile;
@@ -48,7 +65,7 @@ export class KickResponseEvent extends GDTEvent {
     server: Server;
     success: boolean;
 
-    constructor(server: Server, json: type.KickResponseData) {
+    constructor(server: Server, json: KickResponseData) {
         super();
         this.server = server;
         this.success = json.success;
