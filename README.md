@@ -53,15 +53,16 @@ PBKDF2_SALT="{3}"
 
 ### 邮箱配置
 
-projectGDT的收信邮箱使用 IMAPS 协议，在 `.env` 文件中添加以下四行:
+projectGDT 的收信邮箱使用 imap 协议，在 `.env` 文件中添加以下四行:
 ```
-EMAIL_ADDR="{1}
+EMAIL_ADDR="{1}"
 EMAIL_HOST="{2}"
-EMAIL_USERNAME="{3}"
-EMAIL_PASSWORD="{4}"
+EMAIL_PORT="{3}"
+EMAIL_USERNAME="{4}"
+EMAIL_PASSWORD="{5}"
 ```
 
-分别表示收信邮箱地址，收信服务器主机，账户名以及密码 / 授权码。
+分别表示收信邮箱地址，收信服务器主机和端口 (默认 993)，账户名以及密码 / 授权码。
 
 <!-- ### Cloudflare Email Worker 部署
 

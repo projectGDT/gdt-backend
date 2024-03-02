@@ -1,15 +1,15 @@
-import { preRegistries } from "../event-base";
+import { preRegistries } from "../event/event-base";
 import { ImapFlow } from "imapflow";
 
 const checkMailboxInterval = 10000;  // check for new verification emails every 10 seconds
 
 const client = new ImapFlow({
-    host: process.env.EMAIL_HOST as string,
-    port: 993,
+    host: process.env.EMAIL_HOST!,
+    port: parseInt(process.env.EMAIL_PORT ?? "993"),
     secure: true,
     auth: {
-        user: process.env.EMAIL_USERNAME as string,
-        pass: process.env.EMAIL_PASSWORD as string
+        user: process.env.EMAIL_USERNAME!,
+        pass: process.env.EMAIL_PASSWORD!
     },
     logger: false
 });
