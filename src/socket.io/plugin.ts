@@ -20,10 +20,16 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/plugin").on("conn
         return
     }
 
+    let id = -1
+    try {
+        id = parseInt(auth.id)
+    } catch (_err) {
+        socket.emit("id-invalid")
+        return
+    }
+
     const server = await prisma.server.findUnique({
-        where: {
-            id: auth.id,
-        }
+        where: {id}
     });
 
     // not exist
