@@ -1,19 +1,14 @@
 // some basic events that plugin must emit
 
-import {Server} from "@prisma/client";
+import {Server, Profile} from "@prisma/client";
 import {GDTEvent} from "./event-base";
 
-export type PlayerProfile = {
-    uniqueIdProvider: number,
-    uniqueId: string,
-    cachedPlayerName: string
-}
 export type PlayerLoginEventData = {
-    profile: PlayerProfile,
+    profile: Profile,
     timestamp: number
 }
 export type PlayerLogoutEventData = {
-    profile: PlayerProfile,
+    profile: Profile,
     timestamp: number
 }
 export type KickResponseData = {
@@ -24,7 +19,7 @@ export type KickResponseData = {
 export class PlayerLoginEvent extends GDTEvent {
     static typeId = "player-login";
     server: Server;
-    playerProfile: PlayerProfile;
+    playerProfile: Profile;
 
     constructor(server: Server, json: PlayerLoginEventData) {
         super();
@@ -37,7 +32,7 @@ export class PlayerLoginEvent extends GDTEvent {
 export class PlayerLogoutEvent extends GDTEvent {
     static typeId = "player-logout";
     server: Server;
-    playerProfile: PlayerProfile;
+    playerProfile: Profile;
 
     constructor(server: Server, json: PlayerLogoutEventData) {
         super();
@@ -50,9 +45,9 @@ export class PlayerLogoutEvent extends GDTEvent {
 export class KickPlayerEvent extends GDTEvent {
     static typeId = "kick-online-player";
     serverId: number;
-    playerProfile: PlayerProfile;
+    playerProfile: Profile;
 
-    constructor(serverId: number, playerProfile: PlayerProfile) {
+    constructor(serverId: number, playerProfile: Profile) {
         super();
         this.serverId = serverId;
         this.playerProfile = playerProfile;
