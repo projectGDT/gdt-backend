@@ -77,6 +77,8 @@ require("./http/post-login/apply/submit")(app, prisma)
 require("./http/post-login/apply/join-by-code")(app, prisma)
 require("./http/post-login/apply/leave")(app, prisma)
 
+require("./socket.io/plugin")(io, prisma)
+
 httpServer.listen(port, () => {
     console.log(`Start Listening on port ${port}`)
 })
