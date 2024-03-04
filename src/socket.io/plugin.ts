@@ -14,11 +14,18 @@ import {
 module.exports = (io: Server, prisma: PrismaClient) => io.of("/plugin").on("connection", async socket => {
     // verify server id and token
     const auth = socket.handshake.auth;
+
+    if (!auth.id) {
+        socket.emit("id-invalid")
+        return
+    }
+
     const server = await prisma.server.findUnique({
         where: {
             id: auth.id,
         }
     });
+
     // not exist
     if (!server) {
         socket.emit("id-invalid")
