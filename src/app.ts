@@ -62,6 +62,8 @@ require("./socket.io/post-login/profile/bind/java-microsoft")(io, prisma)
 require("./http/post-login/profile/bind/xbox")(app, prisma)
 
 require("./http/post-login/me/servers")(app, prisma)
+require("./http/post-login/me/unhandled-count")(app, prisma)
+require("./http/post-login/me/read-rejected")(app, prisma)
 require("./http/post-login/me/discover/list")(app, prisma)
 require("./http/post-login/me/discover/query")(app, prisma)
 

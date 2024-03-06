@@ -24,6 +24,8 @@ model Player {
 
   involvedServers PlayerInServer[] @relation("involving")
 
+  applyingSessions ApplyingSession[]
+
   isSiteAdmin Boolean @default(false)
 }
 
@@ -53,6 +55,8 @@ model Server {
   bedrockRemote BedrockRemote?
 
   applyingPolicy ApplyingPolicy
+
+  applyingSessions ApplyingSession[]
 }
 
 enum ApplyingPolicy {
@@ -137,8 +141,10 @@ model ApplyingSession {
   id Int @id @default(autoincrement())
   // ApplyingSessions are lazily loaded, so no @relation annotations are used.
 
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId Int
 
+  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
   serverId Int
 
   payload Json
@@ -162,7 +168,8 @@ enum SessionState {
   REVIEWING
   ACCEPTED
   REJECTED
-  FINISHED // After the player joins the QQ group
+  ACTIVATED // After the player joins the QQ group
+  REJECTED_READ
 }
 
 model InvitationCode {
@@ -215,4 +222,5 @@ enum AccessApplySessionState {
   ACCEPTED
   REJECTED
   ACTIVATED // after all modules are enabled on the server
+  REJECTED_READ
 }
