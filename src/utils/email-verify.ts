@@ -1,5 +1,5 @@
-import { preRegistries } from "../event/event-base";
-import { ImapFlow } from "imapflow";
+import {preRegistries} from "../event/event-base";
+import {ImapFlow} from "imapflow";
 
 const checkMailboxInterval = 10000;  // check for new verification emails every 10 seconds
 
@@ -14,11 +14,11 @@ const client = new ImapFlow({
     logger: false
 });
 
-const checkMailbox = async () => {
+client.connect().then(_res => setInterval(async () => {
     let lock = await client.getMailboxLock('INBOX');
     const messagesToDelete: number[] = [];
     try {
-        for await (let message of client.fetch(`1:*`, { envelope: true })) {
+        for await (let message of client.fetch(`1:*`, {envelope: true})) {
             const qid = (message.envelope.from[0].address as string).split('@')[0];
             const passkey = message.envelope.subject;
             preRegistries.emit(`${qid}.${passkey}`, true);
@@ -30,13 +30,4 @@ const checkMailbox = async () => {
         }
         lock.release();
     }
-};
-
-const moduleMain = async () => {
-    await client.connect();
-    setInterval(checkMailbox, checkMailboxInterval);
-};
-
-module.exports = () => {
-    moduleMain().catch(err => console.log(err));
-};
+}, checkMailboxInterval));
