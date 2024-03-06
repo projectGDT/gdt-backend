@@ -43,11 +43,38 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
             res.status(400).end()
             return
         }
-        prisma.applyingSession.create({
+        prisma.server.findUnique({
+            where: {
+                id: serverId
+            },
+            include: {
+                javaRemote: true,
+                bedrockRemote: true
+            }
+        }).then(
+            result => result ?? Promise.reject()
+        ).then(({javaRemote, bedrockRemote}) => prisma.profile.findFirst({
+            where: {
+                playerId: req.auth!.id,
+                uniqueIdProvider: {
+                    in: [
+                        ...javaRemote ? [javaRemote.uniqueIdProvider] : [],
+                        ...bedrockRemote ? [-3 /* Xbox */] : []
+                    ]
+                }
+            }
+        })).then(
+            result => result !== null
+        ).then(isPresent => prisma.applyingSession.create({
             data: {
                 playerId: req.auth!.id,
-                serverId, payload
+                serverId, payload,
+                profileActivated: isPresent
             }
-        }).then(_result => res.status(204).end())
+        })).then(
+            _result => res.status(204).end()
+        ).catch(
+            _err => res.status(400).end()
+        )
     }
 )
