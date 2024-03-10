@@ -4,9 +4,19 @@ import {Request} from "express-jwt";
 
 module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/me/unhandled-count", async (req: Request, res) => {
     prisma.$transaction(async context => {
-        const applyCount = await context.applyingSession.count({
+        const submittedApplyCount = await context.applyingSession.count({
             where: {
                 playerId: req.auth!.id,
+                state: {
+                    in: ["ACCEPTED", "REJECTED"]
+                }
+            }
+        })
+        const receivedApplyCount = await context.applyingSession.count({
+            where: {
+                serverId: {
+                    in: req.auth!.authorizedServers
+                },
                 state: {
                     in: ["ACCEPTED", "REJECTED"]
                 }
@@ -20,6 +30,6 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/me
                 }
             }
         })
-        return applyCount + accessCount
+        return submittedApplyCount + receivedApplyCount + accessCount
     }).then(count => res.json({count}))
 })
