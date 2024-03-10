@@ -5,7 +5,7 @@ import cors from "cors";
 
 import {PrismaClient} from "@prisma/client"
 import {randomBytes} from "node:crypto"
-import {useAuthMiddleware} from "./utils/auth-middleware";
+import {useAuthMiddleware, useManageAuthMiddleware} from "./utils/auth-middleware";
 
 const app = express() // add socket.io support
 const httpServer = createServer(app)
@@ -54,7 +54,7 @@ require("./http/login")(app, prisma)
 
 require("./http/server-meta")(app, prisma)
 
-useAuthMiddleware(app, "/post-login")
+useAuthMiddleware(app)
 
 require("./http/post-login/profile/fetch")(app, prisma)
 require("./http/post-login/profile/delete")(app, prisma)
@@ -79,6 +79,9 @@ require("./http/post-login/apply/submit")(app, prisma)
 require("./http/post-login/apply/fetch-submitted")(app, prisma)
 require("./http/post-login/apply/join-by-code")(app, prisma)
 require("./http/post-login/apply/leave")(app, prisma)
+
+useManageAuthMiddleware(app)
+require("./http/post-login/manage/apply/fetch-received")(app, prisma)
 
 require("./socket.io/plugin")(io, prisma)
 
