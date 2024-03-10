@@ -40,7 +40,7 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/a
                         properties: {
                             address: {
                                 type: "string",
-                                pattern: "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"
+                                pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$"
                             },
                             port: {
                                 type: "integer",
@@ -49,9 +49,9 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/a
                             },
                             compatibleVersions: {
                                 type: "array",
-                                items: {type: "string", pattern: "^1\\.[0-9]{1,2}\\.[0-9]{1,2}$"}
+                                items: {type: "string", maxLength: 8}
                             },
-                            coreVersion: {type: "string", pattern: "^1\\.[0-9]{1,2}\\.[0-9]{1,2}$"},
+                            coreVersion: {type: "string", maxLength: 8},
                             auth: {type: "string", enum: ["microsoft", "littleSkin", "offline"]},
                             modpackVersionId: {type: "string", pattern: "^[0-9a-zA-Z]{8}$"}
                         },
@@ -72,9 +72,9 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post("/post-login/a
                             },
                             compatibleVersions: {
                                 type: "array",
-                                items: {type: "string", pattern: "^1\\.[0-9]{1,2}\\.[0-9]{1,3}$"}
+                                items: {type: "string", maxLength: 8}
                             },
-                            coreVersion: {type: "string", pattern: "^1\\.[0-9]{1,2}\\.[0-9]{1,3}$"}
+                            coreVersion: {type: "string", maxLength: 8}
                         },
                         additionalProperties: false
                     }
