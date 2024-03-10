@@ -1,6 +1,6 @@
 <!-- common contents -->
 
-<div style="text-align: center">
+<div align="center">
     <img width="160" src="logo.svg" alt="logo"><br/>
     projectGDT - for a more connected Minecraft world!<br/>
     QQ Group:
@@ -18,6 +18,14 @@ projectGDT 的子项目之一，也是最为基础的子项目。
 承担了维护玩家与服务器数据、认证、响应 HTTP 请求、与 QQ Bot 通讯，以及分发文件的任务。
 
 ## 开发环境调试
+
+### `node_modules` 初始化
+
+运行命令
+```shell
+npm install
+```
+来下载所需的 node 包。
 
 ### 数据库配置
 
@@ -77,3 +85,32 @@ EMAIL_PASSWORD="{5}"
 npm dev
 ```
 以编译和开启后端。
+
+## 生产环境部署
+
+首先，按照“开发环境调试”中的说明进行环境配置。
+
+### 网络参数配置
+
+在 `.env` 文件中添加以下三行:
+```
+IP="{1}"
+PORT="{2}"
+FRONTEND_ORIGIN="{3}"
+```
+
+- `IP` 指服务将要绑定的网卡 IP。如果不清楚此项，请留空。默认值 `0.0.0.0`。
+- `PORT` 是服务监听的端口。默认值 `14590`。
+- `FRONTEND_ORIGIN` 是前端服务的地址，必须提供，格式为 `[http|https]://[IP/domain]`。最后无需加斜杠 `/`。
+
+### ...在一切完成后
+
+运行
+```shell
+npm build
+```
+构建后的文件位于 `out` 目录内。运行
+```shell
+npm run
+```
+来启动后端。
