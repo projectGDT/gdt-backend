@@ -33,9 +33,9 @@ module.exports = (app: Express, prisma: PrismaClient) => app.post(
             }
         })).then(player =>
             matches(password, player.pwDigested) ? player : Promise.reject()
-        ).then(({id, involvedServers}) => res.json({
+        ).then(({id, isSiteAdmin, involvedServers}) => res.json({
             jwt: jwt.sign({
-                id: id,
+                id, isSiteAdmin,
                 authorizedServers: involvedServers
                     .filter(entry => entry.isOperator)
                     .map(entry => entry.serverId)

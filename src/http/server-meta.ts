@@ -11,6 +11,8 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/server-meta/:
             javaRemote: true,
             bedrockRemote: true
         }
-    }).then(result => res.json(result))
+    }).then(result => {
+        res.json({...result, tokenDigested: undefined})
+    })
         .catch(_err => res.status(404).end)
 })

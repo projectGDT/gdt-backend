@@ -1,31 +1,30 @@
-import { validator } from "@exodus/schemasafe"
+import {Schema} from "@exodus/schemasafe"
 
-export const formValidator = validator({
+export const formSchema: Schema = {
     type: "object",
     properties: {
         title: {type: "string", minLength: 1, maxLength: 30},
-        preface: {type: "string", minLength: 1, maxLength: 200},
+        preface: {type: "string", maxLength: 300},
         questions: {
             type: "array",
             items: {
                 type: "object",
                 properties: {
-                    root: {
-                        type: "object",
-                        properties: {
-                            contents: {type: "string", minLength: 1, maxLength: 60},
-                            hint: {type: "string", minLength: 1, maxLength: 60}
-                        },
-                        required: ["contents"],
-                        additionalProperties: false
-                    },
+                    content: {type: "string", minLength: 1, maxLength: 60},
+                    hint: {type: "string", maxLength: 300},
+                    required: {type: "boolean"},
                     branches: {
                         oneOf: [
                             {
                                 type: "object",
                                 properties: {
                                     type: {type: "string", enum: ["choice"]},
-                                    choices: {type: "array", items: {type: "string", "minLength": 1, "maxLength": 20}},
+                                    choices: {
+                                        type: "array",
+                                        items: {type: "string", "minLength": 1, "maxLength": 20},
+                                        maxItems: 10,
+                                        minItems: 2
+                                    },
                                     allowMultipleChoices: {type: "boolean"},
                                     hasBlank: {type: "boolean"}
                                 },
@@ -59,7 +58,8 @@ export const formValidator = validator({
                             {
                                 type: "object",
                                 properties: {
-                                    "type": {"type": "string", "enum": ["open"]}
+                                    type: {type: "string", enum: ["open"]},
+                                    allowMultipleLines: {type: "boolean"}
                                 },
                                 required: ["type"],
                                 additionalProperties: false
@@ -67,31 +67,65 @@ export const formValidator = validator({
                         ]
                     }
                 },
-                required: ["root", "branches"],
+                required: ["content", "required", "branches"],
                 additionalProperties: false
-            }
+            },
+            maxItems: 20,
+            minItems: 1,
         }
     },
     required: ["title", "preface", "questions"],
     additionalProperties: false
-})
+}
 
-export function generateAnswerSchema(form: {
-    title: string,
-    preface: string,
-    questions: {
-        root: any,
-        branches: {
-            type: string,
-            [key: string]: any
-        }
-    }[]
-}): {type: string, items: any[], additionalItems: boolean} {
+export interface Form {
+    title: string
+    preface: string
+    questions: Question[]
+}
+
+export interface Question {
+    content: string
+    hint?: string
+    required: boolean
+    branches:
+        ChoiceBranches |
+        NumberBranches |
+        DateFullBranches |
+        DateYearMonthBranches |
+        OpenBranches
+}
+
+export interface ChoiceBranches {
+    type: "choice"
+    choices: string[]
+    allowMultipleChoices: boolean
+    hasBlank: boolean
+}
+
+export interface NumberBranches {
+    type: "number"
+}
+
+export interface DateFullBranches {
+    type: "dateFull"
+}
+
+export interface DateYearMonthBranches {
+    type: "dateYearMonth"
+}
+
+export interface OpenBranches {
+    type: "open"
+    allowMultipleLines: boolean
+}
+
+export function generateAnswerSchema(form: Form): Schema {
     // Here we assert that the form is validated.
     // Sorry, TypeScript.
     let ret: {
         type: string,
-        items: { type: string, [key: string]: any }[]
+        items: Schema[]
         additionalItems: boolean
     } = {
         type: "array",
@@ -102,78 +136,46 @@ export function generateAnswerSchema(form: {
     for (let question of form.questions) {
         switch (question.branches.type) {
             case "choice":
-                let item: {
-                    type: string,
-                    properties: { [key: string]: any },
-                    required: string[],
-                    additionalProperties: boolean
-                } = {
+                const {choices, allowMultipleChoices, hasBlank} = question.branches
+                ret.items.push({
                     type: "object",
-                    properties: [],
-                    required: [],
-                    additionalProperties: false
-                }
-
-                if (question.branches.allowMultipleChoices) {
-                    item.properties = {
-                        ...item.properties,
+                    properties: {
                         chosenIndexes: {
                             type: "array",
                             items: {
                                 type: "integer",
                                 minimum: 0,
-                                exclusiveMaximum: question.branches.choices.length
+                                exclusiveMaximum: choices.length
                             },
-                            uniqueItems: true
-                        }
-                    }
-                    item.required = [...item.required, "chosenIndexes"]
-                } else {
-                    item.properties = {
-                        ...item.properties,
-                        chosenIndex: {
-                            type: "integer",
-                            minimum: 0,
-                            exclusiveMaximum: question.branches.choices.length
-                        }
-                    }
-                    item.required = [...item.required, "chosenIndex"]
-                }
-
-                if (question.branches.hasBlank) {
-                    item.properties = {
-                        ...item.properties,
-                        other: {
-                            type: "string",
-                            minLength: 1,
-                            maxLength: 30
-                        }
-                    }
-                }
-
-                ret.items = [ ...ret.items, item ]
+                            uniqueItems: true,
+                            minItems: hasBlank ? 0 : 1,
+                            ...!allowMultipleChoices && {
+                                maxItems: 1
+                            }
+                        },
+                        ...hasBlank ? {
+                            other: {
+                                type: "string",
+                                minLength: 1,
+                                maxLength: 30
+                            }
+                        } : {}
+                    },
+                    required: ["chosenIndexes", ...hasBlank ? ["other"] : []],
+                    additionalProperties: false
+                })
                 break
             case "number":
-                ret.items = [ ...ret.items, {
-                    type: "number"
-                }]
+                ret.items.push({type: "number"})
                 break
             case "open":
-                ret.items = [ ...ret.items, {
-                    type: "string",
-                    minLength: 1,
-                    maxLength: 100
-                }]
+                ret.items.push({type: "string", minLength: 1, maxLength: 600})
                 break
             case "dateFull":
-                ret.items = [ ...ret.items, {
-                    type: "integer" // epoch day
-                }]
+                ret.items.push({type: "integer"}) // epoch day
                 break
             case "dateYearMonth":
-                ret.items = [ ...ret.items, {
-                    type: "integer" // epoch month
-                }]
+                ret.items.push({type: "integer"}) // epoch month
                 break
         }
     }

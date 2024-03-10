@@ -23,10 +23,17 @@ model Player {
   ownedServers Server[] @relation("owning")
 
   involvedServers PlayerInServer[] @relation("involving")
+
+  applyingSessions ApplyingSession[]
+
+  isSiteAdmin Boolean @default(false)
 }
 
 model Server {
   id Int @id @default(autoincrement())
+
+  tokenDigested Bytes
+  // server token, digested using PBKDF2, the same way as player password
 
   groupId Int
 
@@ -48,6 +55,8 @@ model Server {
   bedrockRemote BedrockRemote?
 
   applyingPolicy ApplyingPolicy
+
+  applyingSessions ApplyingSession[]
 }
 
 enum ApplyingPolicy {
@@ -129,28 +138,38 @@ model BedrockRemote {
 }
 
 model ApplyingSession {
-  id Int @id
-  // ApplyingSessions are deferredly loaded, so no @relation annotations are used.
+  id Int @id @default(autoincrement())
+  // ApplyingSessions are lazily loaded, so no @relation annotations are used.
 
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId Int
 
+  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
   serverId Int
 
   payload Json
 
-  submittedAt DateTime
+  createdAt DateTime @default(now())
 
-  state SessionState
+  state SessionState @default(REVIEWING)
+
+  profileActivated Boolean @default(false)
+  // whether the player has binded the corresponding profile
+
+  groupActivated Boolean @default(false)
+  // whether the player has entered the group
 
   handledBy Int @default(-1)
   // Initially the session is unhandled
+  // or joined with an invitation code => handled by "nobody"
 }
 
 enum SessionState {
   REVIEWING
   ACCEPTED
   REJECTED
-  FINISHED // After the player joins the QQ group
+  ACTIVATED // After the player joins the QQ group
+  REJECTED_READ
 }
 
 model InvitationCode {
@@ -161,9 +180,12 @@ model InvitationCode {
 
   issuedBy Int
 
-  expiresAt Int
+  issuedAt DateTime @default(now())
 
-  reuseableTimes Int
+  lifetime Int
+  // given in seconds; permanent: -1
+
+  reusableTimes Int
   // infinite times: -1
 }
 
@@ -175,4 +197,30 @@ model ServerForm {
   body Json
 
   isLatest Boolean
+}
+
+model AccessApplyPayload {
+  id Int @id @default(autoincrement())
+
+  submittedBy Int
+
+  payload Json
+
+  createdAt DateTime @default(now())
+
+  state AccessApplySessionState @default(REVIEWING)
+
+  botActivated Boolean @default(false)
+  // whether the bot is invited into the corresponding group
+
+  pluginActivated Boolean @default(false)
+  // whether the plugin is correctly installed and has performed the first handshake
+}
+
+enum AccessApplySessionState {
+  REVIEWING
+  ACCEPTED
+  REJECTED
+  ACTIVATED // after all modules are enabled on the server
+  REJECTED_READ
 }

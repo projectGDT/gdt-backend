@@ -1,18 +1,15 @@
 import {PrismaClient} from "@prisma/client";
 import {digest} from "../../utils/digest";
-import {usernameExists} from "../../utils/register-utils";
+import {qidExists, usernameExists} from "../../utils/register-utils";
 import {randomUUID} from "node:crypto";
 import {validator} from "@exodus/schemasafe";
 import {Server} from "socket.io";
-import {EventEmitter} from "node:events";
 import {verifyResponse} from "../../utils/captcha-verify";
-import {qidExists} from "../../utils/register-utils";
 import {trueOrReject} from "../../utils/true-or-reject";
+import {preRegistries} from "../../event/event-base";
 
 const validityPeriod = 10 * 60 * 1000; // 10 minutes
-const emailAddr = "rc@gdt.pub";
-
-export const preRegistries = new EventEmitter()
+const emailAddr = process.env.EMAIL_ADDR!;
 
 async function invitationCodeNullOrExists(code: any, prisma: PrismaClient) {
     return (!code) || await prisma.invitationCode.findUnique({
@@ -37,9 +34,8 @@ const submitValidator = validator({
 
 module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit").on("connection", socket => {
     socket.once("payload", payload => {
-        console.log(payload);
         if (!submitValidator(payload)) {
-            socket.emit("payload_error")
+            socket.emit("invalid-payload")
             socket.disconnect()
             return
         }
@@ -73,7 +69,7 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
                     })
                     socket.emit("registered")
                 } else {
-                    socket.emit("timeout_error")
+                    socket.emit("timeout")
                 }
                 socket.disconnect()
             })
@@ -81,7 +77,7 @@ module.exports = (io: Server, prisma: PrismaClient) => io.of("/register/submit")
             // handle expiration
             setTimeout(() => preRegistries.emit(eventName, false), validityPeriod);
         }).catch(_err => {
-            socket.emit("payload_error")
+            socket.emit("invalid-payload")
             socket.disconnect()
         })
     })
