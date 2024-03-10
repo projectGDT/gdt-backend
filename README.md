@@ -1,6 +1,6 @@
 <!-- common contents -->
 
-<div style="text-align: center">
+<div align="center">
     <img width="160" src="logo.svg" alt="logo"><br/>
     projectGDT - for a more connected Minecraft world!<br/>
     QQ Group:
@@ -18,6 +18,14 @@ projectGDT 的子项目之一，也是最为基础的子项目。
 承担了维护玩家与服务器数据、认证、响应 HTTP 请求、与 QQ Bot 通讯，以及分发文件的任务。
 
 ## 开发环境调试
+
+### `node_modules` 初始化
+
+运行命令
+```shell
+npm install
+```
+来下载所需的 node 包。
 
 ### 数据库配置
 
@@ -101,10 +109,8 @@ FRONTEND_ORIGIN="{3}"
 ```shell
 npm build
 ```
-构建后的文件位于 `dist` 目录内。运行
+构建后的文件位于 `out` 目录内。运行
 ```shell
-node --env-file .env index.js
+npm run
 ```
 来启动后端。
-
-**一定要将 `--env-file .env` 参数置于 `index.js` 之前！**

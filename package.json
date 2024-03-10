@@ -2,10 +2,10 @@
   "name": "gdt-backend",
   "version": "0.1.0",
   "description": "The backend of projectGDT.",
-  "main": "index.js",
   "scripts": {
     "dev": "tsc && node ./out/app.js",
-    "build": "npx webpack"
+    "build": "tsc",
+    "run": "node ./out/app.js"
   },
   "keywords": [],
   "author": "Johnny Walker",
@@ -37,8 +37,6 @@
     "prisma": "^5.10.2",
     "socket.io": "^4.7.4",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.3.3",
-    "webpack": "^5.90.2",
-    "webpack-cli": "^5.1.4"
+    "typescript": "^5.3.3"
   }
 }
