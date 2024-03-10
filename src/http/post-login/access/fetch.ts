@@ -7,8 +7,5 @@ module.exports = (app: Express, prisma: PrismaClient) => app.get("/post-login/ac
         where: {
             submittedBy: req.auth!.id!
         }
-    }).then(result => {
-        if (result.length !== 0) res.json(result)
-        else res.status(404).end()
-    })
+    }).then(result => res.json(result))
 })
